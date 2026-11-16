@@ -568,3 +568,7 @@ body:has(.umb-block-list > .section:first-child) .menu-bar, body:has(.detail) .m
   .detail { padding-top: 130px; } .detail-photo, .detail-photo.wide { height: 240px; } .yc { min-height: 420px; }
 }
 .date-badge span { white-space: nowrap; } .date-badge span:first-child { font-size: 58px; } .date-badge span:last-child { font-size: 40px; }
+/* Footer background: plain, no angled cuts */
+.site-footer, .site-footer * { clip-path: none; }
+.site-footer { clip-path: none !important; }
+@media (max-width: 900px) { .site-footer { clip-path: none !important; } }
