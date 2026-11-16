@@ -18,17 +18,8 @@
 	var blurb = "Leaders and practitioners gather to align cross-sectoral strategies for scaling early childhood development impact.";
 }
 
-<!-- Hero -->
-<section class="hero">
-	<div class="container">
-		<h1>@Model.PageTitle</h1>
-		<div class="stats">
-			<div class="stat"><strong>20+</strong><span>Emirate-wide activations</span></div>
-			<div class="divider"></div>
-			<div class="stat"><strong>5+</strong><span>Partners</span></div>
-		</div>
-	</div>
-</section>
+<!-- Content blocks (Hero etc.), edited in the backoffice -->
+@await Html.GetBlockListHtmlAsync(Model.Value<Umbraco.Cms.Core.Models.Blocks.BlockListModel>("contentBlocks"))
 
 <!-- About -->
 <section class="section">

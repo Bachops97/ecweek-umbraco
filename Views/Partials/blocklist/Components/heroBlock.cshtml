@@ -1,0 +1,27 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	// Values come from the "Hero Block" Element Type (aliases: title, backgroundImage, stat1Number ...)
+	var content = Model.Content;
+	var title = content.Value<string>("title");
+	var image = content.Value<MediaWithCrops>("backgroundImage");
+	var bg = image != null ? $"background-image:url('{image.Url()}')" : "";
+
+	var stats = new[] {
+		(Number: content.Value<string>("stat1Number"), Label: content.Value<string>("stat1Label")),
+		(Number: content.Value<string>("stat2Number"), Label: content.Value<string>("stat2Label"))
+	}.Where(s => !string.IsNullOrWhiteSpace(s.Number)).ToList();
+}
+
+<section class="hero" style="@Html.Raw(bg)">
+	<div class="container">
+		<h1>@title</h1>
+		<div class="stats">
+			@for (var i = 0; i < stats.Count; i++)
+			{
+				if (i > 0) { <div class="divider"></div> }
+				<div class="stat"><strong>@stats[i].Number</strong><span>@stats[i].Label</span></div>
+			}
+		</div>
+	</div>
+</section>
