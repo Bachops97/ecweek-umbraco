@@ -21,32 +21,6 @@
 <!-- Content blocks (Hero etc.), edited in the backoffice -->
 @await Html.GetBlockListHtmlAsync(Model.Value<Umbraco.Cms.Core.Models.Blocks.BlockListModel>("contentBlocks"))
 
-<!-- About -->
-<section class="section">
-	<div class="container about">
-		<div>
-			<span class="eyebrow c-pink">About</span>
-			<h2 class="display-lg">Early Childhood Week</h2>
-			<div><p>@Model.BodyText</p></div>
-			<a href="#" class="btn btn-yellow">Explore the week</a>
-		</div>
-		<div class="photo"></div>
-	</div>
-</section>
-
-<!-- Family resources -->
-<section class="section resources">
-	<div class="container about">
-		<div>
-			<h3>Every moment matters</h3>
-			<h2 class="display-lg">Family resources</h2>
-			<p>Make everyday moments count. Discover practical tools, playful ideas and trusted resources designed to help families connect, learn and grow together.</p>
-			<a href="#" class="btn btn-pink">Explore resources</a>
-		</div>
-		<div class="photo"></div>
-	</div>
-</section>
-
 <!-- Featured events -->
 <section class="section bg-neutral">
 	<div class="container">

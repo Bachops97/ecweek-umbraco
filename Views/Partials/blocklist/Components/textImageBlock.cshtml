@@ -1,0 +1,35 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	// Fields of the "Text Image Block" Element Type
+	var content = Model.Content;
+	var eyebrow = content.Value<string>("eyebrow");
+	var heading = content.Value<string>("heading");
+	var text = content.Value<string>("text");
+	var image = content.Value<MediaWithCrops>("image");
+	var buttonText = content.Value<string>("buttonText");
+	var buttonLink = content.Value<string>("buttonLink");
+	var blue = content.Value<bool>("blueTheme");
+
+	// Two looks from the Figma: white section with pink eyebrow, or blue section with pink heading
+	var sectionClass = blue ? "section resources" : "section";
+	var buttonClass = blue ? "btn btn-pink" : "btn btn-yellow";
+}
+
+<section class="@sectionClass">
+	<div class="container about">
+		<div>
+			@if (!string.IsNullOrWhiteSpace(eyebrow))
+			{
+				if (blue) { <h3>@eyebrow</h3> } else { <span class="eyebrow c-pink">@eyebrow</span> }
+			}
+			<h2 class="display-lg @(blue ? "c-pink" : "")">@heading</h2>
+			<p>@text</p>
+			@if (!string.IsNullOrWhiteSpace(buttonText))
+			{
+				<a href="@(string.IsNullOrWhiteSpace(buttonLink) ? "#" : buttonLink)" class="@buttonClass">@buttonText</a>
+			}
+		</div>
+		<div class="photo" style="@(image != null ? Html.Raw($"background-image:url('{image.Url()}')") : Html.Raw(""))"></div>
+	</div>
+</section>
