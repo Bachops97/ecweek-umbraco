@@ -300,3 +300,18 @@ body:has(.contact) .menu-bar { background: #fff; } /* no photo behind the menu o
 }
 button.btn { font: inherit; text-transform: uppercase; border: 0; cursor: pointer; }
 @media (max-width: 900px) { .contact-grid > div + div { margin-top: 30px; } }
+
+/* Popup (modal dialog) */
+.popup { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; overflow-y: auto; }
+.popup[hidden] { display: none; }
+.popup-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .55); }
+.popup-dialog { position: relative; background: var(--neutral); width: min(740px, 100%); padding: 44px 48px 48px; box-shadow: var(--shadow); text-transform: none; }
+.popup-dialog h2 { font-size: clamp(32px, 5vw, 52px); color: var(--dark-blue); padding-right: 50px; margin-bottom: 26px; }
+.popup-img { width: 100%; height: auto; max-height: 300px; object-fit: cover; margin-bottom: 26px; }
+.popup-lead { font-size: 18px; text-transform: uppercase; line-height: 1.6; margin: 0 0 14px; }
+.popup-text { font-size: 14px; line-height: 1.8; margin: 0 0 30px; }
+.popup-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; } .popup-btns .btn { justify-content: space-between; }
+.popup-close { position: absolute; top: 40px; right: 44px; width: 28px; height: 28px; border: 0; background: none; cursor: pointer; }
+.popup-close::before, .popup-close::after { content: ""; position: absolute; left: 0; top: 12px; width: 28px; height: 4px; background: var(--black); transform: rotate(45deg); }
+.popup-close::after { transform: rotate(-45deg); }
+@media (max-width: 600px) { .popup-dialog { padding: 28px 22px 30px; } .popup-btns { grid-template-columns: 1fr; } .popup-close { top: 24px; right: 22px; } }

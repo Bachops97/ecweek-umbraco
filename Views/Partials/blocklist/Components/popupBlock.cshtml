@@ -1,0 +1,24 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	// "Popup Block": a dialog that opens from any link whose href is "#popup-<popupId>" (or automatically once per visit).
+	var content = Model.Content;
+	var id = (content.Value<string>("popupId") ?? "popup").Trim().ToLowerInvariant().Replace(' ', '-');
+	var image = content.Value<MediaWithCrops>("image");
+	var auto = content.Value<bool>("autoOpen");
+}
+
+<div class="popup" id="popup-@id" data-popup="" data-auto="@(auto ? "true" : "false")" hidden>
+	<div class="popup-backdrop" data-popup-close></div>
+	<div class="popup-dialog" role="dialog" aria-modal="true" aria-labelledby="popup-@id-title">
+		<button type="button" class="popup-close" data-popup-close aria-label="Close"></button>
+		<h2 id="popup-@id-title">@(content.Value<string>("heading"))</h2>
+		@if (image != null) { <img class="popup-img" src="@image.Url()" alt="" /> }
+		<p class="popup-lead">@(content.Value<string>("leadText"))</p>
+		<p class="popup-text">@(content.Value<string>("text"))</p>
+		<div class="popup-btns">
+			@if (!string.IsNullOrWhiteSpace(content.Value<string>("button1Text"))) { <a class="btn btn-blue" href="@(content.Value<string>("button1Link") ?? "#")">@(content.Value<string>("button1Text"))</a> }
+			@if (!string.IsNullOrWhiteSpace(content.Value<string>("button2Text"))) { <a class="btn btn-blue" href="@(content.Value<string>("button2Link") ?? "#")">@(content.Value<string>("button2Text"))</a> }
+		</div>
+	</div>
+</div>
