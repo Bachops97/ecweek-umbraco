@@ -315,3 +315,112 @@ button.btn { font: inherit; text-transform: uppercase; border: 0; cursor: pointe
 .popup-close::before, .popup-close::after { content: ""; position: absolute; left: 0; top: 12px; width: 28px; height: 4px; background: var(--black); transform: rotate(45deg); }
 .popup-close::after { transform: rotate(-45deg); }
 @media (max-width: 600px) { .popup-dialog { padding: 28px 22px 30px; } .popup-btns { grid-template-columns: 1fr; } .popup-close { top: 24px; right: 22px; } }
+
+/* =====================================================================
+   Motion layer: smooth scrolling, hover/focus effects, menus, sliders,
+   accordion, popup, scroll-reveal. Everything is switched off at the
+   bottom for people who prefer reduced motion.
+   ===================================================================== */
+:root { --ease: cubic-bezier(.22, .61, .36, 1); }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+a, button { transition: color .2s var(--ease), background-color .2s var(--ease), opacity .2s var(--ease), border-color .2s var(--ease); }
+
+/* Buttons: lift, soften colour, nudge the arrow */
+.btn { transition: transform .22s var(--ease), box-shadow .22s var(--ease), filter .22s var(--ease), background-color .2s var(--ease); }
+.btn::after { transition: transform .22s var(--ease); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0, 0, 0, .18); filter: brightness(1.06); }
+.btn:hover::after { transform: translateX(5px); }
+.btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0, 0, 0, .18); }
+.btn-download:hover::before { transform: translateY(2px); } .btn-download::before { display: inline-block; transition: transform .22s var(--ease); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+/* Top bar + menu links: animated underline */
+.topbar a { position: relative; } .topbar a:hover { color: var(--yellow); }
+.main-nav > ul > li > a, .main-nav > ul > li > .sub-toggle { position: relative; }
+.main-nav > ul > li > a::before, .main-nav > ul > li > .sub-toggle::before { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: var(--dark-blue); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+.main-nav > ul > li > a:hover::before, .main-nav > ul > li > a.active::before, .main-nav > ul > li > .sub-toggle:hover::before, .has-sub.open > .sub-toggle::before, .has-sub:focus-within > .sub-toggle::before { transform: scaleX(1); }
+.brand img { transition: transform .3s var(--ease); } .brand:hover img { transform: scale(1.03); }
+.social a, .d-social a { transition: transform .2s var(--ease); } .social a:hover, .d-social a:hover { transform: translateY(-3px) scale(1.1); }
+.site-footer .cols a { transition: color .2s var(--ease), padding-left .2s var(--ease); } .site-footer .cols li a:hover { color: var(--black); padding-left: 6px; }
+
+/* Desktop dropdowns: fade + slide instead of popping in */
+.has-sub .sub { display: block; opacity: 0; visibility: hidden; transform: translateY(10px); pointer-events: none; transition: opacity .22s var(--ease), transform .22s var(--ease), visibility 0s linear .22s; }
+.has-sub .sub::before { content: ""; position: absolute; left: 0; right: 0; top: -18px; height: 18px; } /* keeps the menu open while the mouse crosses the gap */
+.has-sub:hover .sub, .has-sub:focus-within .sub, .has-sub.open .sub { opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition-delay: 0s; }
+.has-sub:hover > .sub-toggle::after, .has-sub:focus-within > .sub-toggle::after, .has-sub.open > .sub-toggle::after { transform: rotate(180deg); }
+.has-sub .sub li a { display: inline-block; transition: color .2s var(--ease), transform .2s var(--ease); } .has-sub .sub li a:hover { transform: translateX(5px); }
+
+/* Mobile menu: panel slides/fades, links stagger in, sub-menus slide open */
+@media (max-width: 1100px) {
+  .main-nav { display: block; opacity: 0; visibility: hidden; transform: translateY(-12px); transition: opacity .28s var(--ease), transform .28s var(--ease), visibility 0s linear .28s; }
+  .nav-open .main-nav { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  .nav-open .main-nav > ul > li { animation: menuItemIn .4s var(--ease) both; }
+  .nav-open .main-nav > ul > li:nth-child(1) { animation-delay: .04s; } .nav-open .main-nav > ul > li:nth-child(2) { animation-delay: .08s; }
+  .nav-open .main-nav > ul > li:nth-child(3) { animation-delay: .12s; } .nav-open .main-nav > ul > li:nth-child(4) { animation-delay: .16s; }
+  .nav-open .main-nav > ul > li:nth-child(5) { animation-delay: .2s; } .nav-open .main-nav > ul > li:nth-child(6) { animation-delay: .24s; }
+  .nav-open .main-nav > ul > li:nth-child(n+7) { animation-delay: .3s; }
+  .main-nav > ul > li > a::before, .main-nav > ul > li > .sub-toggle::before { display: none; }
+  .has-sub .sub, .has-sub:hover .sub, .has-sub:focus-within .sub { display: block; position: static; opacity: 1; visibility: visible; transform: none; pointer-events: auto; max-height: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; transition: max-height .35s var(--ease), padding .35s var(--ease); }
+  .has-sub .sub::before { display: none; }
+  .has-sub.open .sub { max-height: 320px; padding-top: 10px; }
+  .has-sub:hover > .sub-toggle::after, .has-sub:focus-within > .sub-toggle::after { transform: none; }
+  .has-sub.open > .sub-toggle::after { transform: rotate(180deg); }
+  .hamburger span { transition: transform .28s var(--ease), opacity .2s var(--ease), top .28s var(--ease); }
+}
+@keyframes menuItemIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* Hero carousel: crossfade (slides stack in one grid cell) */
+.hero-carousel { display: grid; }
+.hero-carousel .hero, .hero-carousel .hero.is-active { grid-area: 1 / 1; display: flex; opacity: 0; visibility: hidden; transition: opacity .7s var(--ease), visibility 0s linear .7s; }
+.hero-carousel .hero.is-active { opacity: 1; visibility: visible; transition-delay: 0s; z-index: 1; }
+.hero-carousel:not(.is-ready) .hero:first-child { opacity: 1; visibility: visible; }
+.hero-carousel .carousel-arrows { grid-area: 1 / 1; align-self: end; justify-self: end; position: static; margin: 0 100px 30px 0; z-index: 3; }
+@media (max-width: 1100px) { .hero-carousel .carousel-arrows { margin: 0 16px 16px 0; } }
+.hero-carousel .hero h1, .hero-carousel .hero .stats { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease) .15s, transform .6s var(--ease) .15s; }
+.hero-carousel .hero.is-active h1, .hero-carousel .hero.is-active .stats, .hero-carousel:not(.is-ready) .hero:first-child h1, .hero-carousel:not(.is-ready) .hero:first-child .stats { opacity: 1; transform: none; }
+.carousel-arrows button, .card-arrows button { transition: transform .2s var(--ease), opacity .2s var(--ease), filter .2s var(--ease); }
+.carousel-arrows button:hover, .card-arrows button:hover { transform: scale(1.1); filter: brightness(1.08); } .carousel-arrows button:active, .card-arrows button:active { transform: scale(.96); }
+
+/* Cards, logos, panels */
+.card-track .card { transition: transform .28s var(--ease), filter .28s var(--ease); } .card-track .card:hover { transform: translateY(-8px); filter: drop-shadow(0 12px 18px rgba(0, 0, 0, .16)); }
+.card-track .card .thumb { transition: transform .5s var(--ease); } .card-track .card:hover .thumb { transform: scale(1.03); }
+.fc { transition: transform .28s var(--ease); } .fc:hover { transform: translateY(-6px); }
+.logo-strip img, .pd-item img { transition: transform .25s var(--ease), filter .25s var(--ease); } .logo-strip img:hover, .pd-item:hover img { transform: scale(1.08); }
+.chip { transition: background-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease); } .chip:hover { color: var(--dark-blue); border-color: var(--dark-blue); transform: translateY(-2px); } .chip.active:hover { color: #fff; }
+.photo { transition: transform .5s var(--ease); } .about:hover .photo { transform: scale(1.015); }
+
+/* Testimonials crossfade */
+.testimonials .quotes { display: grid; }
+.testimonials .quote, .testimonials .quote.active { display: block; grid-area: 1 / 1; opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .45s var(--ease), transform .45s var(--ease), visibility 0s linear .45s; }
+.testimonials .quote.active { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+
+/* FAQ accordion: animated height, plus/minus morph */
+.faq-item { transition: background-color .2s var(--ease); } .faq-item:hover { background: #4a54bf; }
+.faq-q::before { content: ""; position: absolute; right: 24px; top: 50%; width: 20px; height: 3px; margin-top: -1.5px; background: #fff; }
+.faq-q::after { content: ""; position: absolute; right: 24px; top: 50%; width: 20px; height: 3px; margin-top: -1.5px; background: #fff; transform: rotate(90deg); transition: transform .3s var(--ease); }
+.faq-item.open .faq-q::after { content: ""; transform: rotate(0deg); } /* overrides the old minus glyph */
+.faq-a { display: grid; grid-template-rows: 0fr; padding: 0; transition: grid-template-rows .35s var(--ease); }
+.faq-item.open .faq-a { display: grid; grid-template-rows: 1fr; }
+.faq-a-inner { overflow: hidden; padding: 0 22px; opacity: 0; transition: opacity .3s var(--ease), padding .35s var(--ease); }
+.faq-item.open .faq-a-inner { opacity: 1; padding: 0 22px 26px; }
+.faq-a-inner p:last-child { margin-bottom: 0; }
+
+/* Popup: fade + rise */
+.popup { opacity: 0; transition: opacity .28s var(--ease); } .popup.open { opacity: 1; }
+.popup-dialog { transform: translateY(24px) scale(.97); transition: transform .32s var(--ease); } .popup.open .popup-dialog { transform: none; }
+.popup-close { transition: transform .25s var(--ease); } .popup-close:hover { transform: rotate(90deg); }
+
+/* Partner filter: items fade/scale out and in */
+.pd-item { transition: opacity .25s var(--ease), transform .25s var(--ease); } .pd-item.out { opacity: 0; transform: scale(.9); } .pd-item[hidden] { display: none; }
+
+/* Scroll reveal (only active when the script has added .js to <html>) */
+.js .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: var(--d, 0s); }
+.js .reveal.in { opacity: 1; transform: none; }
+.js .card-track .card.reveal.in:hover { transform: translateY(-8px); } /* keep hover lift after the reveal */
+
+/* Respect "reduce motion" */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; transition-duration: .001ms !important; transition-delay: 0s !important; }
+  .js .reveal { opacity: 1; transform: none; }
+}

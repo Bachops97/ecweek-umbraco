@@ -18,7 +18,7 @@
 				var answer = item.Content.Value<string>("answer") ?? "";
 				<div class="faq-item@(n == 0 ? " open" : "")">
 					<button type="button" class="faq-q" aria-expanded="@(n == 0 ? "true" : "false")">@(item.Content.Value<string>("question"))</button>
-					<div class="faq-a">@foreach (var para in answer.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) { <p>@para</p> }</div>
+					<div class="faq-a"><div class="faq-a-inner">@foreach (var para in answer.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) { <p>@para</p> }</div></div>
 				</div>
 				n++;
 			}

@@ -14,6 +14,7 @@
 			<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
 			<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
 			<div class="quote-mark" aria-hidden="true">&ldquo;</div>
+			<div class="quotes">
 			@foreach (var item in items)
 			{
 				<blockquote class="quote">
@@ -21,6 +22,7 @@
 					<cite>&ndash;@(item.Content.Value<string>("author"))</cite>
 				</blockquote>
 			}
+			</div>
 			<div class="card-arrows pink">
 				<button type="button" class="t-prev" aria-label="Previous">&larr;</button>
 				<button type="button" class="t-next" aria-label="Next">&rarr;</button>

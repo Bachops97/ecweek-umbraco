@@ -4,6 +4,7 @@
 	var toggle = document.getElementById('navToggle');
 	if (!header || !toggle) return;
 
+	window.matchMedia('(min-width: 1101px)').addEventListener('change', function (e) { if (e.matches) { header.classList.remove('nav-open'); document.body.classList.remove('no-scroll'); toggle.setAttribute('aria-expanded', 'false'); } });
 	toggle.addEventListener('click', function () {
 		var open = header.classList.toggle('nav-open');
 		toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -11,8 +12,10 @@
 	});
 
 	// Sub menus: click toggles (mobile). On desktop they open on hover via CSS.
+	var mobile = window.matchMedia('(max-width: 1100px)');
 	header.querySelectorAll('.has-sub > .sub-toggle').forEach(function (btn) {
 		btn.addEventListener('click', function () {
+			if (!mobile.matches) return;
 			var li = btn.parentElement;
 			var open = li.classList.toggle('open');
 			btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -91,7 +94,11 @@
 			c.addEventListener('click', function () {
 				chips.forEach(function (x) { x.classList.toggle('active', x === c); });
 				var cat = c.getAttribute('data-cat');
-				items.forEach(function (it) { it.classList.toggle('hide', cat && it.getAttribute('data-cat') !== cat); });
+				items.forEach(function (it) {
+					var show = !cat || it.getAttribute('data-cat') === cat;
+					if (show) { it.hidden = false; void it.offsetWidth; it.classList.remove('out'); }
+					else { it.classList.add('out'); setTimeout(function () { if (it.classList.contains('out')) it.hidden = true; }, 260); }
+				});
 			});
 		});
 	});
@@ -102,8 +109,8 @@
 	var popups = document.querySelectorAll('[data-popup]');
 	if (!popups.length) return;
 	var lastFocus = null;
-	function open(p) { lastFocus = document.activeElement; p.hidden = false; document.body.classList.add('no-scroll'); var c = p.querySelector('.popup-close'); if (c) c.focus(); }
-	function close(p) { p.hidden = true; document.body.classList.remove('no-scroll'); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+	function open(p) { lastFocus = document.activeElement; p.hidden = false; void p.offsetWidth; p.classList.add('open'); document.body.classList.add('no-scroll'); var c = p.querySelector('.popup-close'); if (c) c.focus(); }
+	function close(p) { p.classList.remove('open'); document.body.classList.remove('no-scroll'); setTimeout(function () { if (!p.classList.contains('open')) p.hidden = true; }, 300); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
 	popups.forEach(function (p) {
 		p.querySelectorAll('[data-popup-close]').forEach(function (b) { b.addEventListener('click', function () { close(p); }); });
 		if (p.getAttribute('data-auto') === 'true') {
@@ -119,6 +126,24 @@
 	});
 	document.addEventListener('keydown', function (e) {
 		if (e.key !== 'Escape') return;
-		popups.forEach(function (p) { if (!p.hidden) close(p); });
+		popups.forEach(function (p) { if (!p.hidden && p.classList.contains('open')) close(p); });
+	});
+})();
+
+// Scroll reveal: sections fade/rise into view (skipped for reduced motion or when the browser lacks IntersectionObserver)
+(function () {
+	var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	var targets = document.querySelectorAll(
+		'.section-head, .about .copy, .about .photo, .partners-head, .logo-strip, .card, .fc, .ic-grid > div, .timeline .steps li, ' +
+		'.faq-item, .dl-panel, .details, .cform, .center, .testimonials .copy, .contact h2');
+	if (reduce || !('IntersectionObserver' in window) || !targets.length) { targets.forEach(function (t) { t.classList.add('in'); }); return; }
+	var io = new IntersectionObserver(function (entries) {
+		entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+	}, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+	targets.forEach(function (t) {
+		t.classList.add('reveal');
+		var idx = Array.prototype.indexOf.call(t.parentElement.children, t);
+		t.style.setProperty('--d', Math.min(idx, 4) * 0.08 + 's');
+		io.observe(t);
 	});
 })();
