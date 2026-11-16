@@ -1,0 +1,23 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+@{
+	// "You might be interested in" strip: the other items of the same kind from the same listing page
+	var current = Model;
+	var related = (current.Parent?.Children() ?? Enumerable.Empty<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>())
+		.Where(c => c.ContentType.Alias == current.ContentType.Alias && c.Id != current.Id && c.IsVisible()).Take(8).ToList();
+	var bg = ViewData["bg"] as string ?? "yellow";
+	var h1 = ViewData["h1"] as string ?? "";
+	var h2 = ViewData["h2"] as string ?? "";
+	var horizontal = ViewData["horizontal"] is true;
+}
+@if (related.Any())
+{
+	<section class="section related bg-@bg">
+		<div class="container"><h2 class="display-lg"><span class="rel-1">@h1</span> <span class="rel-2">@h2</span></h2></div>
+		<div class="card-carousel" data-cards>
+			<div class="card-track">
+				@foreach (var item in related) { ViewData["filterable"] = false; ViewData["horizontal"] = horizontal; @await Html.PartialAsync("ItemCard", item) }
+			</div>
+			<div class="container"><div class="card-arrows"><button type="button" class="card-prev" aria-label="Previous">&larr;</button><button type="button" class="card-next" aria-label="Next">&rarr;</button></div></div>
+		</div>
+	</section>
+}

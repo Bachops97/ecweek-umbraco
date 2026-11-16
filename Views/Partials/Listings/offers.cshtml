@@ -1,0 +1,28 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+@{
+	var items = Model.Children().Where(c => c.ContentType.Alias == "offerItem" && c.IsVisible()).OrderByDescending(c => c.CreateDate).ToList();
+	var ph = Model.Value<string>("searchPlaceholder") ?? "Search for Offers...";
+}
+
+<section class="section bg-white listing" data-listing data-page="8">
+	<div class="container">
+		<div class="center">
+			<span class="eyebrow tc-black">@(Model.Value<string>("eyebrow"))</span>
+			<h2 class="display-lg tc-lightblue">@(Model.Value<string>("heading"))</h2>
+		</div>
+		<form class="l-bar" role="search" onsubmit="return false">
+			<input type="search" data-q placeholder="@ph" aria-label="Search offers" />
+			<button type="submit" class="btn btn-blue">Search</button>
+		</form>
+		<div class="chips">
+			<button type="button" class="chip active" data-chip="">All</button>
+			<button type="button" class="chip" data-chip="offer">Offers</button>
+			<button type="button" class="chip" data-chip="discount">Discounts</button>
+		</div>
+		<div class="l-list cols2" data-paged>
+			@foreach (var item in items) { ViewData["filterable"] = true; ViewData["horizontal"] = true; @await Html.PartialAsync("ItemCard", item) }
+		</div>
+		<p class="l-none" data-none hidden>No offers match your search.</p>
+		<div class="center"><button type="button" class="btn btn-blue" data-more>@(Model.Value<string>("loadMoreText") ?? "Load more offers")</button></div>
+	</div>
+</section>

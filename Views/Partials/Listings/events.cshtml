@@ -1,0 +1,65 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+@using System.Globalization
+@{
+	var items = Model.Children().Where(c => c.ContentType.Alias == "eventItem" && c.IsVisible()).OrderBy(c => c.Value<DateTime>("startDate").Date < DateTime.Today ? 1 : 0).ThenBy(c => c.Value<DateTime>("startDate")).ToList(); // upcoming first, past events last
+	string[] Lines(Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent c, string a) => (c.Value<string>(a) ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+	var emirates = items.Select(i => i.Value<string>("emirate") ?? "").Where(x => x != "").Distinct().OrderBy(x => x).ToList();
+	var types = items.Select(i => i.Value<string>("eventType") ?? "").Where(x => x != "").Distinct().OrderBy(x => x).ToList();
+	var partners = items.SelectMany(i => Lines(i, "partnerNames")).Distinct().OrderBy(x => x).ToList();
+	var dates = items.Select(i => i.Value<DateTime>("startDate")).Where(d => d > DateTime.MinValue).Select(d => d.Date).Distinct().OrderBy(d => d).ToList();
+	var today = DateTime.Today;
+	var upcoming = items.Where(i => i.Value<DateTime>("startDate").Date >= today).ToList();
+	var past = items.Where(i => i.Value<DateTime>("startDate").Date < today).OrderByDescending(i => i.Value<DateTime>("startDate")).ToList();
+	var upDates = upcoming.Select(i => i.Value<DateTime>("startDate").Date).Distinct().OrderBy(x => x).ToList();
+	var dayChips = upDates.Any() ? Enumerable.Range(0, (upDates.Max() - upDates.Min()).Days + 1).Select(n => upDates.Min().AddDays(n)).ToList() : new List<DateTime>();
+	var ph = Model.Value<string>("searchPlaceholder") ?? "Search for Events...";
+}
+
+<section class="section bg-cream listing" data-listing data-page="9">
+	<div class="container">
+		<form class="l-bar" role="search" onsubmit="return false">
+			<input type="search" data-q placeholder="@ph" aria-label="Search events" />
+			<button type="submit" class="btn btn-green">Search</button>
+		</form>
+		<div class="l-filters">
+			<label class="sel"><select data-f="emirate" aria-label="Emirate"><option value="">Select Emirate</option>@foreach (var e in emirates) { <option>@e</option> }</select></label>
+			<label class="sel"><select data-f="date" aria-label="Date"><option value="">Select Date</option>@foreach (var d in dates) { <option value="@d.ToString("yyyy-MM-dd")">@d.ToString("ddd d MMM", CultureInfo.InvariantCulture)</option> }</select></label>
+			<label class="sel"><select data-f="partners" aria-label="Partner"><option value="">Select Partner</option>@foreach (var p in partners) { <option>@p</option> }</select></label>
+			<label class="sel"><select data-f="type" aria-label="Event type"><option value="">Select Event Type</option>@foreach (var t in types) { <option>@t</option> }</select></label>
+			<div class="view-toggle">
+				<button type="button" class="vt active" data-view="grid">Grid View @await Html.PartialAsync("Icon", "grid")</button>
+				<button type="button" class="vt" data-view="cal">Calendar View @await Html.PartialAsync("Icon", "calendar")</button>
+			</div>
+		</div>
+
+		<div class="view view-grid">
+			<div class="l-grid" data-paged>
+				@foreach (var item in items) { ViewData["filterable"] = true; ViewData["horizontal"] = false; @await Html.PartialAsync("ItemCard", item) }
+			</div>
+			<p class="l-none" data-none hidden>No events match your search.</p>
+			<div class="center"><button type="button" class="btn btn-green" data-more>@(Model.Value<string>("loadMoreText") ?? "Load more events")</button></div>
+		</div>
+
+		<div class="view view-cal" hidden>
+			<div class="cal">
+				<aside class="cal-days" aria-label="Pick a day">
+					@foreach (var d in dayChips) { <button type="button" class="day" data-day="@d.ToString("yyyy-MM-dd")">@d.ToString("ddd", CultureInfo.InvariantCulture) @d.Day</button> }
+				</aside>
+				<div class="cal-main">
+					<h3 class="cal-h">Upcoming events</h3>
+					<div class="l-list">
+						@foreach (var item in upcoming) { ViewData["filterable"] = true; ViewData["horizontal"] = true; @await Html.PartialAsync("ItemCard", item) }
+					</div>
+					@if (past.Any())
+					{
+						<h3 class="cal-h">Past events</h3>
+						<div class="l-list">
+							@foreach (var item in past) { ViewData["filterable"] = true; ViewData["horizontal"] = true; @await Html.PartialAsync("ItemCard", item) }
+						</div>
+					}
+					<p class="l-none" data-none-cal hidden>No events on this day.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

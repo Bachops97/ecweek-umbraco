@@ -1,0 +1,29 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	var cards = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("cards") ?? new List<BlockListItem>();
+	string P(IPublishedElement e, string a, string d = "") { var o = e.Value(a); var s = o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString(); return string.IsNullOrWhiteSpace(s) ? d : s; }
+}
+
+<section class="section year-cards">
+	<div class="container">
+		<div class="center"><span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span><h2 class="display-lg tc-green">@(content.Value<string>("heading"))</h2></div>
+		<div class="yc-grid">
+			@foreach (var card in cards)
+			{
+				var c = card.Content; var colour = P(c, "colour", "green"); var image = c.Value<MediaWithCrops>("image");
+				<article class="yc yc-@colour" style="@(image != null ? Html.Raw($"background-image:url('{image.Url()}')") : Html.Raw(""))">
+					<div class="yc-inner">
+						@if (!string.IsNullOrWhiteSpace(c.Value<string>("themeLabel"))) { <span class="yc-label">@(c.Value<string>("themeLabel"))</span> }
+						@if (!string.IsNullOrWhiteSpace(c.Value<string>("theme"))) { <span class="yc-theme">@(c.Value<string>("theme"))</span> }
+						<strong class="yc-year">@(c.Value<string>("year"))</strong>
+						@if (!string.IsNullOrWhiteSpace(c.Value<string>("text"))) { <p>@(c.Value<string>("text"))</p> }
+						@if (!string.IsNullOrWhiteSpace(c.Value<string>("buttonText"))) { <a class="btn btn-yellow" href="@(string.IsNullOrWhiteSpace(c.Value<string>("buttonLink")) ? "#" : c.Value<string>("buttonLink"))">@(c.Value<string>("buttonText"))</a> }
+					</div>
+				</article>
+			}
+		</div>
+	</div>
+</section>

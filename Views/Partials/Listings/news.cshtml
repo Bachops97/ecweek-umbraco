@@ -1,0 +1,24 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+@{
+	var items = Model.Children().Where(c => c.ContentType.Alias == "articleItem" && c.IsVisible()).OrderByDescending(c => c.Value<DateTime>("publishDate")).ToList();
+	var ph = Model.Value<string>("searchPlaceholder") ?? "Search for News...";
+}
+
+<section class="section bg-cream listing" data-listing data-page="9">
+	<div class="container">
+		<form class="l-bar news" role="search" onsubmit="return false">
+			<input type="search" data-q placeholder="@ph" aria-label="Search news" />
+			<button type="submit" class="btn btn-blue">Search</button>
+			<label class="sel sort"><span>Sort by:</span>
+				<select data-sort aria-label="Sort by">
+					<option value="">Default</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option>
+				</select>
+			</label>
+		</form>
+		<div class="l-grid" data-paged>
+			@foreach (var item in items) { ViewData["filterable"] = true; ViewData["horizontal"] = false; @await Html.PartialAsync("ItemCard", item) }
+		</div>
+		<p class="l-none" data-none hidden>No articles match your search.</p>
+		<div class="center"><button type="button" class="btn btn-blue" data-more>@(Model.Value<string>("loadMoreText") ?? "Load more")</button></div>
+	</div>
+</section>

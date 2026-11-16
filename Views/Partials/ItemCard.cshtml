@@ -1,0 +1,43 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent>
+@using System.Globalization
+@using Umbraco.Cms.Core.Models
+@{
+	// One card for an Event, Offer or Article. ViewData["horizontal"] = image-left layout; ViewData["filterable"] = emit data attributes for the listing script.
+	var c = Model;
+	var alias = c.ContentType.Alias;
+	string S(string a) => c.Value<string>(a) ?? "";
+	string[] Lines(string a) => S(a).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+	var img = c.Value<MediaWithCrops>("thumbnail");
+	var logos = (c.Value<IEnumerable<MediaWithCrops>>("partnerLogos") ?? Enumerable.Empty<MediaWithCrops>()).Take(3).ToList();
+	var horizontal = ViewData["horizontal"] is true;
+	var filterable = ViewData["filterable"] is true;
+
+	var start = c.Value<DateTime>("startDate");
+	var hasDate = start > DateTime.MinValue;
+	var tag = alias == "eventItem" ? S("eventType") : alias == "offerItem" ? S("offerType") : S("category");
+	var btn = alias == "eventItem" ? "View event" : alias == "offerItem" ? (string.IsNullOrWhiteSpace(S("buttonText")) ? "View offer" : S("buttonText")) : "Read more";
+	var theme = alias == "articleItem" ? "blue" : alias == "offerItem" ? "blue" : "green";
+	var attrs = "";
+	if (filterable)
+	{
+		var pub = c.Value<DateTime>("publishDate");
+		attrs = $" data-q=\"{System.Net.WebUtility.HtmlEncode((c.Name + " " + S("summary") + " " + tag).ToLowerInvariant())}\"" +
+			$" data-emirate=\"{System.Net.WebUtility.HtmlEncode(S("emirate"))}\" data-type=\"{System.Net.WebUtility.HtmlEncode(tag)}\"" +
+			$" data-kind=\"{System.Net.WebUtility.HtmlEncode(tag.ToLowerInvariant())}\" data-date=\"{(hasDate ? start.ToString("yyyy-MM-dd") : "")}\"" +
+			$" data-partners=\"{System.Net.WebUtility.HtmlEncode(string.Join("|", Lines("partnerNames")))}\"" +
+			$" data-sort-date=\"{(hasDate ? start.ToString("yyyyMMddHHmm") : pub > DateTime.MinValue ? pub.ToString("yyyyMMddHHmm") : c.CreateDate.ToString("yyyyMMddHHmm"))}\" data-sort-name=\"{System.Net.WebUtility.HtmlEncode(c.Name.ToLowerInvariant())}\"";
+	}
+}
+
+<article class="card@(horizontal ? " card-h" : "")@(filterable ? " l-item" : "")"@Html.Raw(attrs)>
+	<a class="thumb" href="@c.Url()" tabindex="-1" aria-hidden="true" style="@(img != null ? Html.Raw($"background-image:url('{img.Url()}')") : Html.Raw(""))">
+		@if (hasDate && alias == "eventItem") { <div class="date">@start.Day<small>@start.ToString("MMM", CultureInfo.InvariantCulture).ToUpperInvariant()</small></div> }
+	</a>
+	<div class="card-body">
+		@if (!string.IsNullOrWhiteSpace(tag)) { <span class="tag">@tag</span> }
+		<h4><a href="@c.Url()">@c.Name</a></h4>
+		<p>@S("summary")</p>
+		@if (logos.Any()) { <div class="card-logos">@foreach (var l in logos) { <img src="@l.Url()" alt="" loading="lazy" /> }</div> }
+		<a href="@c.Url()" class="btn btn-@theme">@btn</a>
+	</div>
+</article>

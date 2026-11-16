@@ -4,6 +4,7 @@
 	var content = Model.Content;
 	var items = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("items") ?? new List<BlockListItem>();
 	var n = 0;
+	var cats = items.Select(i => i.Content.Value<string>("category") ?? "").Where(c => c != "").Distinct().ToList();
 }
 
 <section class="section bg-cream faq">
@@ -12,11 +13,17 @@
 			<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
 			<h2 class="display-lg tc-blue">@(content.Value<string>("heading"))</h2>
 		</div>
+		@if (cats.Count > 1)
+		{
+			<div class="chips center-chips" data-faq-tabs>
+				@for (var k = 0; k < cats.Count; k++) { <button type="button" class="chip@(k == 0 ? " active" : "")" data-cat="@cats[k]">@cats[k]</button> }
+			</div>
+		}
 		<div class="faq-list">
 			@foreach (var item in items)
 			{
 				var answer = item.Content.Value<string>("answer") ?? "";
-				<div class="faq-item@(n == 0 ? " open" : "")">
+				<div class="faq-item@(n == 0 ? " open" : "")" data-cat="@(item.Content.Value<string>("category") ?? "")" @Html.Raw(cats.Count > 1 && (item.Content.Value<string>("category") ?? "") != cats[0] ? "hidden" : "")>
 					<button type="button" class="faq-q" aria-expanded="@(n == 0 ? "true" : "false")">@(item.Content.Value<string>("question"))</button>
 					<div class="faq-a"><div class="faq-a-inner">@foreach (var para in answer.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) { <p>@para</p> }</div></div>
 				</div>

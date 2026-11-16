@@ -1,0 +1,43 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models
+@{
+	Layout = "Layout.cshtml";
+	string S(string a) => Model.Value<string>(a) ?? "";
+	string[] Lines(string a) => S(a).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+	var img = Model.Value<MediaWithCrops>("thumbnail");
+	var gallery = Model.Value<IEnumerable<MediaWithCrops>>("gallery") ?? Enumerable.Empty<MediaWithCrops>();
+	var video = Model.Value<MediaWithCrops>("videoImage");
+	ViewData["bg"] = "pink"; ViewData["h1"] = "Related"; ViewData["h2"] = "content"; ViewData["horizontal"] = false;
+}
+
+<article class="detail article-detail bg-cream">
+	<div class="container narrow">
+		<nav class="crumbs dark" aria-label="Breadcrumb"><a href="/">Home</a><span>&rsaquo;</span><a href="@Model.Parent?.Url()">@(Model.Parent?.Name)</a><span>&rsaquo;</span><span class="current">@Model.Name</span></nav>
+		@if (S("category") != "") { <span class="tag pink">@S("category")</span> }
+		<h1 class="display-lg">@Model.Name</h1>
+		@if (img != null) { <div class="detail-photo clip wide" style="background-image:url('@img.Url()')"></div> }
+		@if (S("intro") != "") { <p class="intro">@S("intro")</p> }
+		@foreach (var line in Lines("body"))
+		{
+			if (line.Equals("[gallery]", StringComparison.OrdinalIgnoreCase))
+			{
+				<div class="gallery-2">@foreach (var g in gallery.Take(2)) { <div class="g-img" style="background-image:url('@g.Url()')"></div> }</div>
+			}
+			else if (line.Equals("[video]", StringComparison.OrdinalIgnoreCase))
+			{
+				if (video != null) { <div class="video-thumb" style="background-image:url('@video.Url()')"><span>@await Html.PartialAsync("Icon", "play")</span></div> }
+			}
+			else if (line.StartsWith("# ")) { <h3 class="art-h">@line.Substring(2)</h3> }
+			else { <p class="body">@line</p> }
+		}
+		<div class="share-row">
+			<div class="share"><span>Share this post</span>
+				<a href="https://twitter.com/intent/tweet?url=@Uri.EscapeDataString(Context.Request.Scheme + "://" + Context.Request.Host + Model.Url())" aria-label="Share on X" rel="noopener" target="_blank"><img src="/images/icons/x.png" alt="" /></a>
+				<a href="https://www.linkedin.com/sharing/share-offsite/?url=@Uri.EscapeDataString(Context.Request.Scheme + "://" + Context.Request.Host + Model.Url())" aria-label="Share on LinkedIn" rel="noopener" target="_blank"><img src="/images/icons/linkedin.png" alt="" /></a>
+			</div>
+			<div class="tag-row">@foreach (var t in Lines("tags")) { <span class="tag pink">@t</span> }</div>
+		</div>
+	</div>
+</article>
+
+@await Html.PartialAsync("Related", Model)

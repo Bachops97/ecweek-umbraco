@@ -1,0 +1,27 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	var content = Model.Content;
+	var photos = (content.Value<IEnumerable<MediaWithCrops>>("photos") ?? Enumerable.Empty<MediaWithCrops>()).ToList();
+	var videos = (content.Value<IEnumerable<MediaWithCrops>>("videos") ?? Enumerable.Empty<MediaWithCrops>()).ToList();
+}
+
+<section class="section bg-yellow gallery" data-gallery>
+	<div class="container center">
+		<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
+		<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
+		<div class="chips center-chips">
+			<button type="button" class="chip pink active" data-tab="photos">Photos</button>
+			@if (videos.Any()) { <button type="button" class="chip pink" data-tab="videos">Videos</button> }
+		</div>
+		<div class="masonry" data-pane="photos">
+			@foreach (var p in photos) { <a class="m-item" href="@p.Url()" target="_blank" rel="noopener"><img src="@p.Url()" alt="@p.Name" loading="lazy" /></a> }
+		</div>
+		@if (videos.Any())
+		{
+			<div class="masonry" data-pane="videos" hidden>
+				@foreach (var v in videos) { <div class="m-item video"><img src="@v.Url()" alt="@v.Name" loading="lazy" /><span>@await Html.PartialAsync("Icon", "play")</span></div> }
+			</div>
+		}
+	</div>
+</section>

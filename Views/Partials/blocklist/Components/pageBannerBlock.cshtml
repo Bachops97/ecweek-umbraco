@@ -10,20 +10,35 @@
 	var parent = content.Value<string>("breadcrumbParent");
 	var subtitle = content.Value<string>("subtitle");
 	var btn = content.Value<string>("buttonText");
+	var b1 = content.Value<string>("dateBadge1"); var b2 = content.Value<string>("dateBadge2");
+	var panel = !string.IsNullOrWhiteSpace(b1);
 }
 
-<section class="page-banner" style="@Html.Raw(bg)">
+<section class="page-banner@(panel ? " with-panel" : "")" style="@Html.Raw(bg)">
 	<div class="container">
 		<nav class="crumbs" aria-label="Breadcrumb">
 			<a href="/">Home</a>
 			@if (!string.IsNullOrWhiteSpace(parent)) { <span>&rsaquo;</span><span>@parent</span> }
 			<span>&rsaquo;</span><span class="current">@title</span>
 		</nav>
-		<h1>@title</h1>
-		@if (!string.IsNullOrWhiteSpace(subtitle)) { <p class="sub">@subtitle</p> }
-		@if (!string.IsNullOrWhiteSpace(btn))
+		@if (panel)
+		{
+			<div class="banner-panel">
+				<div class="date-badge"><span>@b1</span><span>@b2</span></div>
+				<div class="bp-text">
+					<h1>@title</h1>
+					@if (!string.IsNullOrWhiteSpace(subtitle)) { <p class="sub">@subtitle</p> }
+				</div>
+			</div>
+		}
+		else
+		{
+			<h1>@title</h1>
+			@if (!string.IsNullOrWhiteSpace(subtitle)) { <p class="sub">@subtitle</p> }
+			@if (!string.IsNullOrWhiteSpace(btn))
 		{
 			<a href="@(string.IsNullOrWhiteSpace(content.Value<string>("buttonLink")) ? "#" : content.Value<string>("buttonLink"))" class="btn btn-@P("buttonColour", "green")">@btn</a>
+		}
 		}
 	</div>
 </section>

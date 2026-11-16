@@ -1,0 +1,17 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var items = (IEnumerable<BlockListItem>)Model.Content.Value<BlockListModel>("items") ?? new List<BlockListItem>();
+	var colours = new[] { "pink", "yellow", "orange", "lightblue" };
+	var i = 0;
+}
+
+<section class="section stats-strip">
+	<div class="container stats-grid">
+		@foreach (var item in items)
+		{
+			<div class="stat-item"><strong class="tc-@colours[i % 4]">@(item.Content.Value<string>("number"))</strong><span>@(item.Content.Value<string>("label"))</span></div>
+			i++;
+		}
+	</div>
+</section>

@@ -1,0 +1,24 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models
+@{
+	Layout = "Layout.cshtml";
+	string S(string a) => Model.Value<string>(a) ?? "";
+	string[] Lines(string a) => S(a).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+	var img = Model.Value<MediaWithCrops>("thumbnail");
+	var logo = Model.Value<MediaWithCrops>("partnerLogo");
+	ViewData["bg"] = "lightblue"; ViewData["h1"] = "Related"; ViewData["h2"] = "discounts"; ViewData["horizontal"] = true;
+}
+
+<article class="detail offer-detail bg-cream">
+	<div class="container narrow">
+		<nav class="crumbs dark" aria-label="Breadcrumb"><a href="/">Home</a><span>&rsaquo;</span><a href="@Model.Parent?.Url()">@(Model.Parent?.Name)</a><span>&rsaquo;</span><span class="current">@Model.Name</span></nav>
+		@if (S("offerType") != "") { <span class="tag">@S("offerType")</span> }
+		<h1 class="display-lg">@Model.Name</h1>
+		@if (img != null) { <div class="detail-photo clip wide" style="background-image:url('@img.Url()')"></div> }
+		@if (logo != null) { <img class="offer-logo" src="@logo.Url()" alt="" /> }
+		@if (S("offerCode") != "") { <p class="offer-code">Offer code: @S("offerCode")</p> }
+		@foreach (var p in Lines("body")) { <p class="body">@p</p> }
+	</div>
+</article>
+
+@await Html.PartialAsync("Related", Model)
