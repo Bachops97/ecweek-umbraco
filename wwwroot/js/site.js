@@ -147,3 +147,15 @@
 		io.observe(t);
 	});
 })();
+
+// Footer: groups collapse on the mobile layout only
+(function () {
+	var mobile = window.matchMedia('(max-width: 900px)');
+	document.querySelectorAll('.f-group .f-toggle').forEach(function (b) {
+		b.addEventListener('click', function () {
+			if (!mobile.matches) return;
+			var g = b.parentElement, open = g.classList.toggle('open');
+			b.setAttribute('aria-expanded', open ? 'true' : 'false');
+		});
+	});
+})();

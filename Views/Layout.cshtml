@@ -3,6 +3,12 @@
 @{
 	Layout = null;
 	var path = Context.Request.Path.Value ?? "/";
+
+	// A link is "on" when we are on that page or anywhere beneath it (e.g. /events/some-event/ keeps "Events" lit).
+	bool On(string href) => href == "/" ? path == "/" : path.StartsWith(href, StringComparison.OrdinalIgnoreCase);
+	string Cls(string href) => On(href) ? "active" : "";
+	string[] whoWeAre = { "/about-us/", "/about-the-organizers/", "/partners/", "/previous-editions/" };
+	string[] whereToGo = { "/events/", "/offers/" };
 }
 
 <!DOCTYPE HTML>
@@ -35,30 +41,30 @@
 					<button class="hamburger" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
 					<nav id="mainNav" class="main-nav" aria-label="Main">
 						<ul>
-							<li><a href="/" class="@(path == "/" ? "active" : "")">Home</a></li>
-							<li class="has-sub">
+							<li><a href="/" class="@Cls("/")" @Html.Raw(On("/") ? "aria-current=\"page\"" : "")>Home</a></li>
+							<li class="has-sub @(whoWeAre.Any(On) ? "current" : "")">
 								<button type="button" class="sub-toggle" aria-expanded="false">Who we are</button>
 								<ul class="sub">
-									<li><a href="/about-us/">About Early Childhood Week</a></li>
-									<li><a href="/about-the-organizers/">About the Organizers</a></li>
-									<li><a href="/partners/">Partners</a></li>
-									<li><a href="#">Previous Editions</a></li>
+									<li><a href="/about-us/" class="@Cls("/about-us/")">About Early Childhood Week</a></li>
+									<li><a href="/about-the-organizers/" class="@Cls("/about-the-organizers/")">About the Organizers</a></li>
+									<li><a href="/partners/" class="@Cls("/partners/")">Partners</a></li>
+									<li><a href="/previous-editions/" class="@Cls("/previous-editions/")">Previous Editions</a></li>
 								</ul>
 							</li>
-							<li><a href="/resources/">Resources</a></li>
-							<li class="has-sub">
+							<li><a href="/resources/" class="@Cls("/resources/")">Resources</a></li>
+							<li class="has-sub @(whereToGo.Any(On) ? "current" : "")">
 								<button type="button" class="sub-toggle" aria-expanded="false">Where to go</button>
 								<ul class="sub">
-									<li><a href="#">Events</a></li>
-									<li><a href="#">Offers</a></li>
+									<li><a href="/events/" class="@Cls("/events/")">Events</a></li>
+									<li><a href="/offers/" class="@Cls("/offers/")">Offers</a></li>
 								</ul>
 							</li>
-							<li><a href="/pledge-today/">Pledge today</a></li>
-							<li><a href="#">Content hub</a></li>
+							<li><a href="/pledge-today/" class="@Cls("/pledge-today/")">Pledge today</a></li>
+							<li><a href="/content-hub/" class="@Cls("/content-hub/")">Content hub</a></li>
 							<li class="mobile-only divider"></li>
 							<li class="mobile-only lang"><button type="button" class="sub-toggle lang-toggle">English</button></li>
-							<li class="mobile-only"><a href="/partner-with-us/">Partner with us</a></li>
-							<li class="mobile-only"><a href="/contact-us/">Contact us</a></li>
+							<li class="mobile-only"><a href="/partner-with-us/" class="@Cls("/partner-with-us/")">Partner with us</a></li>
+							<li class="mobile-only"><a href="/contact-us/" class="@Cls("/contact-us/")">Contact us</a></li>
 						</ul>
 					</nav>
 				</div>
@@ -70,36 +76,43 @@
 		<!-- Footer -->
 		<footer class="site-footer">
 			<div class="container">
-				<div class="top">
+				<div class="f-top">
 					<a href="/" class="brand"><img src="/images/ecweek-logos.png" alt="Early Childhood Week" /></a>
-					<div class="social">Follow us:
+					<div class="f-follow">
+						<span>Follow us:</span>
+						<div class="f-social">
 							<a href="#" aria-label="Facebook"><img src="/images/icons/facebook.png" alt="" /></a>
 							<a href="#" aria-label="X"><img src="/images/icons/x.png" alt="" /></a>
 							<a href="#" aria-label="Instagram"><img src="/images/icons/instagram.png" alt="" /></a>
 							<a href="#" aria-label="LinkedIn"><img src="/images/icons/linkedin.png" alt="" /></a>
 							<a href="#" aria-label="YouTube"><img src="/images/icons/youtube.png" alt="" /></a>
 						</div>
+					</div>
 				</div>
-				<div class="cols">
-					<div><a href="/">Home</a></div>
-					<div>Who we are
+				<nav class="f-nav" aria-label="Footer">
+					<div class="f-item"><a href="/">Home</a></div>
+					<div class="f-group">
+						<button type="button" class="f-toggle" aria-expanded="false">Who we are</button>
 						<ul>
 							<li><a href="/about-us/">About Early Childhood Week</a></li>
 							<li><a href="/about-the-organizers/">About the Organizers</a></li>
 							<li><a href="/partners/">Partners</a></li>
-							<li><a href="#">Previous Editions</a></li>
+							<li><a href="/previous-editions/">Previous Editions</a></li>
 						</ul>
 					</div>
-					<div><a href="/resources/">Resources</a></div>
-					<div>Where to go
+					<div class="f-item"><a href="/resources/">Resources</a></div>
+					<div class="f-group">
+						<button type="button" class="f-toggle" aria-expanded="false">Where to go</button>
 						<ul>
-							<li><a href="#">Events</a></li>
-							<li><a href="#">Offers</a></li>
+							<li><a href="/events/">Events</a></li>
+							<li><a href="/offers/">Offers</a></li>
 						</ul>
 					</div>
-					<div><a href="/pledge-today/">Pledge today</a></div>
-					<div><a href="#">Content hub</a><br /><a href="/faq/">FAQ</a><br /><a href="/contact-us/">Contact us</a></div>
-				</div>
+					<div class="f-item"><a href="/pledge-today/">Pledge today</a></div>
+					<div class="f-item"><a href="/content-hub/">Content hub</a></div>
+					<div class="f-item"><a href="/faq/">FAQ</a></div>
+					<div class="f-item"><a href="/contact-us/">Contact us</a></div>
+				</nav>
 				<div class="copy">&copy; @DateTime.Now.Year All rights reserved.</div>
 			</div>
 		</footer>
