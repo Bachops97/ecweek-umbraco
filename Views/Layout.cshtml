@@ -17,29 +17,48 @@
 	</head>
 
 	<body>
-		<!-- Top bar -->
-		<div class="topbar">
-			<div class="container">
-				<a href="#">عربي</a>
-				<div class="links">
-					<a href="#">Partner with us</a>
-					<a href="#">Contact us</a>
+		<!-- Header: green top bar + menu bar (links are static for now; later built from the content tree) -->
+		<header class="site-header" id="siteHeader">
+			<div class="topbar">
+				<div class="topbar-inner">
+					<a href="#" lang="ar">عربي</a>
+					<div class="links">
+						<a href="#">Partner with us</a>
+						<a href="#">Contact us</a>
+					</div>
 				</div>
 			</div>
-		</div>
-
-		<!-- Menu (links are static for now; later built from the content tree) -->
-		<header class="site-header">
-			<div class="container">
-				<div class="menu">
-					<a href="/" class="logos"><span class="logo-mark">ECW</span> Early Childhood Week</a>
-					<nav>
-						<a href="/" class="@(path == "/" ? "active" : "")">HOME</a>
-						<a href="#" class="caret">WHO WE ARE</a>
-						<a href="#">RESOURCES</a>
-						<a href="#" class="caret">WHERE TO GO</a>
-						<a href="#">PLEDGE TODAY</a>
-						<a href="#">CONTENT HUB</a>
+			<div class="menu-bar">
+				<div class="menu-inner">
+					<a href="/" class="brand"><img src="/images/ecweek-logos.png" alt="Early Childhood Week 18.11 - 22.11. Led by Al Usra, part of wed, in collaboration with Abu Dhabi Early Childhood Authority, Year of Family" /></a>
+					<button class="hamburger" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
+					<nav id="mainNav" class="main-nav" aria-label="Main">
+						<ul>
+							<li><a href="/" class="@(path == "/" ? "active" : "")">Home</a></li>
+							<li class="has-sub">
+								<button type="button" class="sub-toggle" aria-expanded="false">Who we are</button>
+								<ul class="sub">
+									<li><a href="#">About Early Childhood Week</a></li>
+									<li><a href="#">About the Organizers</a></li>
+									<li><a href="#">Partners</a></li>
+									<li><a href="#">Previous Editions</a></li>
+								</ul>
+							</li>
+							<li><a href="#">Resources</a></li>
+							<li class="has-sub">
+								<button type="button" class="sub-toggle" aria-expanded="false">Where to go</button>
+								<ul class="sub">
+									<li><a href="#">Events</a></li>
+									<li><a href="#">Offers</a></li>
+								</ul>
+							</li>
+							<li><a href="#">Pledge today</a></li>
+							<li><a href="#">Content hub</a></li>
+							<li class="mobile-only divider"></li>
+							<li class="mobile-only lang"><button type="button" class="sub-toggle lang-toggle">English</button></li>
+							<li class="mobile-only"><a href="#">Partner with us</a></li>
+							<li class="mobile-only"><a href="#">Contact us</a></li>
+						</ul>
 					</nav>
 				</div>
 			</div>
@@ -51,7 +70,7 @@
 		<footer class="site-footer">
 			<div class="container">
 				<div class="top">
-					<a href="/" class="logos display">Early Childhood Week</a>
+					<a href="/" class="brand"><img src="/images/ecweek-logos.png" alt="Early Childhood Week" /></a>
 					<div class="social">FOLLOW US: <i></i><i></i><i></i><i></i><i></i></div>
 				</div>
 				<div class="cols">
@@ -77,5 +96,6 @@
 				<div class="copy">&copy; @DateTime.Now.Year All rights reserved.</div>
 			</div>
 		</footer>
+		<script src="/js/site.js"></script>
 	</body>
 </html>

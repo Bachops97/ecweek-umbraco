@@ -1,0 +1,12 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<List<Umbraco.Cms.Core.Models.Blocks.BlockListItem>>
+
+<div class="hero-carousel" data-carousel>
+	@foreach (var slide in Model)
+	{
+		@await Html.PartialAsync("blocklist/Components/heroBlock", slide)
+	}
+	<div class="carousel-arrows">
+		<button type="button" class="carousel-prev" aria-label="Previous slide">&larr;</button>
+		<button type="button" class="carousel-next" aria-label="Next slide">&rarr;</button>
+	</div>
+</div>
