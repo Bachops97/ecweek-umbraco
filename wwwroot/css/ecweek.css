@@ -97,7 +97,7 @@ body.no-scroll { overflow: hidden; }
 .hero h1 { font-size: clamp(56px, 8vw, 96px); max-width: 640px; margin-bottom: 40px; }
 .hero .stats { display: flex; gap: 40px; align-items: center; }
 .hero .stat strong { display: block; font-family: var(--font-heading); font-size: 56px; color: var(--pink); }
-.hero .stat + .stat strong { color: var(--yellow); }
+.hero .stat:last-child strong { color: var(--yellow); } /* Figma: 20+ pink, 5+ yellow (a divider sits between, so not + selector) */
 .hero .stat span { font-size: 12px; }
 .hero .divider { width: 1px; height: 60px; background: rgba(255,255,255,.5); }
 

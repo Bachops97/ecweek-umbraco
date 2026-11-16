@@ -2,8 +2,10 @@
 @{
 	if (Model?.Any() != true) { return; }
 
-	// Consecutive Hero blocks are shown together as a carousel (slides); every other block renders on its own.
-	var heroSlides = new List<Umbraco.Cms.Core.Models.Blocks.BlockListItem>();
+	// All Hero blocks form ONE carousel (slides), shown where the first Hero block sits.
+	// Every other block renders on its own, in the order the editor arranged them.
+	var heroSlides = Model.Where(b => b?.ContentKey != null && b.Content.ContentType.Alias == "heroBlock").ToList();
+	var carouselShown = false;
 }
 
 <div class="umb-block-list">
@@ -13,21 +15,14 @@
 
 		if (block.Content.ContentType.Alias == "heroBlock")
 		{
-			heroSlides.Add(block);
+			if (!carouselShown)
+			{
+				@await Html.PartialAsync("blocklist/_heroCarousel", heroSlides)
+				carouselShown = true;
+			}
 			continue;
 		}
 
-		@if (heroSlides.Any())
-		{
-			@await Html.PartialAsync("blocklist/_heroCarousel", heroSlides.ToList())
-			heroSlides.Clear();
-		}
-
 		@await Html.PartialAsync("blocklist/Components/" + block.Content.ContentType.Alias, block)
-	}
-
-	@if (heroSlides.Any())
-	{
-		@await Html.PartialAsync("blocklist/_heroCarousel", heroSlides.ToList())
 	}
 </div>
