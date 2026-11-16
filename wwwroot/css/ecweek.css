@@ -291,3 +291,12 @@ body.no-scroll { overflow: hidden; }
 .cform .file input[type=file] { display: none; } .cform .attach { cursor: pointer; }
 body:has(.contact) .menu-bar { background: #fff; } /* no photo behind the menu on the contact page */
 .about .photo.panel-coral { background: #f4836b; } .about .photo.panel-navy { background: #2b2d6e; } /* beat the generic .about .photo rule */
+@media (max-width: 900px) {
+  .filters { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 8px; margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip { white-space: nowrap; flex: 0 0 auto; }
+  .site-footer .top { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .pd-grid { gap: 20px 12px; } .pd-item { height: 72px; }
+}
+button.btn { font: inherit; text-transform: uppercase; border: 0; cursor: pointer; }
+@media (max-width: 900px) { .contact-grid > div + div { margin-top: 30px; } }
