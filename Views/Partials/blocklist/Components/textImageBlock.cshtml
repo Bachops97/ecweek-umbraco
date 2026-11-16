@@ -10,13 +10,15 @@
 	var buttonText = content.Value<string>("buttonText");
 	var buttonLink = content.Value<string>("buttonLink");
 	var blue = content.Value<bool>("blueTheme");
+	var bgImage = content.Value<MediaWithCrops>("backgroundImage"); // optional photo behind the section (tinted by the theme colour)
 
 	// Two looks from the Figma: white section with pink eyebrow, or blue section with pink heading
-	var sectionClass = blue ? "section resources" : "section";
+	var sectionClass = (blue ? "section resources" : "section") + (bgImage != null ? " has-bg" : "");
+	var sectionStyle = bgImage != null ? $"background-image:url('{bgImage.Url()}')" : "";
 	var buttonClass = blue ? "btn btn-pink" : "btn btn-yellow";
 }
 
-<section class="@sectionClass">
+<section class="@sectionClass" style="@Html.Raw(sectionStyle)">
 	<div class="container about">
 		<div>
 			@if (!string.IsNullOrWhiteSpace(eyebrow))
