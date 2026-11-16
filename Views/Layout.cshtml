@@ -1,0 +1,81 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = null;
+	var path = Context.Request.Path.Value ?? "/";
+}
+
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>@Model.Name - Early Childhood Week</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="/css/ecweek.css" />
+	</head>
+
+	<body>
+		<!-- Top bar -->
+		<div class="topbar">
+			<div class="container">
+				<a href="#">عربي</a>
+				<div class="links">
+					<a href="#">Partner with us</a>
+					<a href="#">Contact us</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Menu (links are static for now; later built from the content tree) -->
+		<header class="site-header">
+			<div class="container">
+				<div class="menu">
+					<a href="/" class="logos"><span class="logo-mark">ECW</span> Early Childhood Week</a>
+					<nav>
+						<a href="/" class="@(path == "/" ? "active" : "")">HOME</a>
+						<a href="#" class="caret">WHO WE ARE</a>
+						<a href="#">RESOURCES</a>
+						<a href="#" class="caret">WHERE TO GO</a>
+						<a href="#">PLEDGE TODAY</a>
+						<a href="#">CONTENT HUB</a>
+					</nav>
+				</div>
+			</div>
+		</header>
+
+		@RenderBody()
+
+		<!-- Footer -->
+		<footer class="site-footer">
+			<div class="container">
+				<div class="top">
+					<a href="/" class="logos display">Early Childhood Week</a>
+					<div class="social">FOLLOW US: <i></i><i></i><i></i><i></i><i></i></div>
+				</div>
+				<div class="cols">
+					<div><a href="/">Home</a></div>
+					<div>Who we are
+						<ul>
+							<li><a href="#">About Early Childhood Week</a></li>
+							<li><a href="#">About the Organizers</a></li>
+							<li><a href="#">Partners</a></li>
+							<li><a href="#">Previous Editions</a></li>
+						</ul>
+					</div>
+					<div><a href="#">Resources</a></div>
+					<div>Where to go
+						<ul>
+							<li><a href="#">Events</a></li>
+							<li><a href="#">Offers</a></li>
+						</ul>
+					</div>
+					<div><a href="#">Pledge today</a></div>
+					<div><a href="#">Content hub</a><br /><a href="#">FAQ</a><br /><a href="#">Contact us</a></div>
+				</div>
+				<div class="copy">&copy; @DateTime.Now.Year All rights reserved.</div>
+			</div>
+		</footer>
+	</body>
+</html>

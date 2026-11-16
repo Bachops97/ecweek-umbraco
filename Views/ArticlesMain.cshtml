@@ -1,0 +1,49 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ArticlesMain>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "Layout.cshtml";
+
+	// Child articles of this page, newest first (hidden ones excluded)
+	var articles = Model.Children()
+		.Where(x => x.IsVisible())
+		.OrderByDescending(x => x.CreateDate);
+}
+
+<!-- Jumbotron, w title -->
+<div class="jumbotron text-center jumbotron-fluid">
+	<div class="container">
+		<h1 class="display-1">@Model.ArticlesTitle</h1>
+	</div>
+</div>
+
+<!-- Main container -->
+<div class="container">
+
+	<!-- Intro text -->
+	<div class="row section">
+		<div class="col-md-12">
+			@Model.ArticlesBodyText
+		</div>
+	</div>
+
+	<!-- Latest articles -->
+	<div class="row section">
+		<div class="col-md-12">
+			<h3>Latest stories</h3>
+
+			@foreach (var item in articles)
+			{
+				<article class="special">
+					<div class="articledate">@item.CreateDate.ToString("MMMM d, yyyy")</div>
+					<div class="articletitle"><a href="@item.Url()">@item.Name</a></div>
+					<div class="articlepreview">
+						@Html.Truncate(item.Value<string>("articleContent") ?? "", 120, true)
+						<a href="@item.Url()">Read @item.Name..</a>
+					</div>
+				</article>
+			}
+		</div>
+	</div>
+
+</div>

@@ -1,0 +1,23 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.ArticlesItem>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "Layout.cshtml";
+}
+
+<!-- Jumbotron, w title -->
+<div class="jumbotron text-center jumbotron-fluid">
+	<div class="container">
+		<h1 class="display-1">@Model.ArticleTitle</h1>
+	</div>
+</div>
+
+<!-- Article content -->
+<div class="container">
+	<div class="row section">
+		<div class="col-md-12">
+			@Model.ArticleContent
+			<p><a href="@Model.Parent?.Url()">&laquo; Back to @Model.Parent?.Name</a></p>
+		</div>
+	</div>
+</div>
