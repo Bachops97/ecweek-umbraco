@@ -1,0 +1,29 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	// "Partners Block": heading, intro, row of partner logos (media picker), button
+	var content = Model.Content;
+	var logos = content.Value<IEnumerable<MediaWithCrops>>("logos") ?? Enumerable.Empty<MediaWithCrops>();
+	var buttonText = content.Value<string>("buttonText");
+	var buttonLink = content.Value<string>("buttonLink");
+}
+
+<section class="section partners">
+	<div class="container">
+		<div class="partners-head">
+			<span class="eyebrow c-pink">@(content.Value<string>("eyebrow"))</span>
+			<h2 class="display-lg c-pink">@(content.Value<string>("heading"))</h2>
+			<p>@(content.Value<string>("intro"))</p>
+		</div>
+	</div>
+	<div class="logo-strip">
+		@foreach (var logo in logos)
+		{
+			<img src="@logo.Url()" alt="@logo.Name" loading="lazy" />
+		}
+	</div>
+	@if (!string.IsNullOrWhiteSpace(buttonText))
+	{
+		<div class="center"><a href="@(string.IsNullOrWhiteSpace(buttonLink) ? "#" : buttonLink)" class="btn btn-pink">@buttonText</a></div>
+	}
+</section>

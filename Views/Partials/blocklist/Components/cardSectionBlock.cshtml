@@ -1,0 +1,64 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	// "Card Section Block": heading + intro + button, with a carousel of Card Blocks (Events = green, News = blue)
+	var content = Model.Content;
+	var eyebrow = content.Value<string>("eyebrow");
+	var heading = content.Value<string>("heading");
+	var intro = content.Value<string>("intro");
+	var buttonText = content.Value<string>("buttonText");
+	var buttonLink = content.Value<string>("buttonLink");
+	var blue = content.Value<bool>("blueTheme");
+	var cards = (IEnumerable<BlockListItem>)(content.Value<BlockListModel>("cards")) ?? new List<BlockListItem>();
+	var theme = blue ? "blue" : "green";
+}
+
+<section class="section bg-neutral card-section is-@theme">
+	<div class="container">
+		<div class="section-head">
+			<div><span class="eyebrow">@eyebrow</span><h2 class="display-lg c-@theme">@heading</h2></div>
+			<p>@intro</p>
+			@if (!string.IsNullOrWhiteSpace(buttonText))
+			{
+				<a href="@(string.IsNullOrWhiteSpace(buttonLink) ? "#" : buttonLink)" class="btn btn-@theme">@buttonText</a>
+			}
+		</div>
+	</div>
+
+	<div class="card-carousel" data-cards>
+		<div class="card-track">
+			@foreach (var item in cards)
+			{
+				var c = item.Content;
+				var image = c.Value<MediaWithCrops>("image");
+				var day = c.Value<string>("dateDay");
+				var month = c.Value<string>("dateMonth");
+				var tag = c.Value<string>("tag");
+				var link = c.Value<string>("buttonLink");
+				var btn = c.Value<string>("buttonText");
+				<article class="card">
+					<div class="thumb" style="@(image != null ? Html.Raw($"background-image:url('{image.Url()}')") : Html.Raw(""))">
+						@if (!string.IsNullOrWhiteSpace(day))
+						{
+							<div class="date">@day<small>@month</small></div>
+						}
+					</div>
+					@if (!string.IsNullOrWhiteSpace(tag)) { <span class="tag">@tag</span> }
+					<h4>@(c.Value<string>("title"))</h4>
+					<p>@(c.Value<string>("description"))</p>
+					@if (!string.IsNullOrWhiteSpace(btn))
+					{
+						<a href="@(string.IsNullOrWhiteSpace(link) ? "#" : link)" class="btn btn-@theme">@btn</a>
+					}
+				</article>
+			}
+		</div>
+		<div class="container">
+			<div class="card-arrows">
+				<button type="button" class="card-prev" aria-label="Previous">&larr;</button>
+				<button type="button" class="card-next" aria-label="Next">&rarr;</button>
+			</div>
+		</div>
+	</div>
+</section>

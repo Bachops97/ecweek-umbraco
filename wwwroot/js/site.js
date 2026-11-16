@@ -41,3 +41,22 @@
 		root.classList.add('is-ready'); show(0); auto();
 	});
 })();
+
+// Card carousels (Events / News): arrows scroll one card
+(function () {
+	document.querySelectorAll('[data-cards]').forEach(function (root) {
+		var track = root.querySelector('.card-track');
+		var prev = root.querySelector('.card-prev');
+		var next = root.querySelector('.card-next');
+		function step() { var c = track.querySelector('.card'); return c ? c.getBoundingClientRect().width + 32 : 400; }
+		function update() {
+			prev.classList.toggle('dim', track.scrollLeft < 8);
+			next.classList.toggle('dim', track.scrollLeft + track.clientWidth >= track.scrollWidth - 8);
+		}
+		prev.addEventListener('click', function () { track.scrollBy({ left: -step() }); });
+		next.addEventListener('click', function () { track.scrollBy({ left: step() }); });
+		track.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('resize', update);
+		update();
+	});
+})();
