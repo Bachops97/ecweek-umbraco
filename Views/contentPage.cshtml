@@ -1,0 +1,7 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = "Layout.cshtml";
+}
+
+<!-- Every inner page is a list of blocks (Page Banner first), edited in the backoffice -->
+@await Html.GetBlockListHtmlAsync(Model.Value<Umbraco.Cms.Core.Models.Blocks.BlockListModel>("contentBlocks"))

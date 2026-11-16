@@ -187,3 +187,10 @@ body.no-scroll { overflow: hidden; }
 .partners .partners-head .eyebrow { opacity: .55; }
 .logo-strip { display: flex; gap: 56px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px 20px 40px; max-width: 1440px; margin: 0 auto; }
 .logo-strip img { height: 64px; width: auto; max-width: 220px; object-fit: contain; }
+
+/* Page banner (inner pages): photo header under the menu with the page title */
+.page-banner { position: relative; min-height: 440px; padding-top: 160px; display: flex; align-items: flex-end; color: #fff; background: #3a3a3a center/cover no-repeat; }
+.page-banner::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.6)); }
+.page-banner .container { position: relative; width: 100%; padding-bottom: 56px; }
+.page-banner h1 { font-size: clamp(48px, 7vw, 96px); text-transform: uppercase; }
+@media (max-width: 1100px) { .page-banner { min-height: 320px; padding-top: 96px; } }

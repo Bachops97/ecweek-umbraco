@@ -1,0 +1,14 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	// "Page Banner Block": dark photo header with the page title, first block on every inner page
+	var content = Model.Content;
+	var image = content.Value<MediaWithCrops>("image");
+	var bg = image != null ? $"background-image:url('{image.Url()}')" : "";
+}
+
+<section class="page-banner" style="@Html.Raw(bg)">
+	<div class="container">
+		<h1>@(content.Value<string>("title"))</h1>
+	</div>
+</section>
