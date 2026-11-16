@@ -1,0 +1,30 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	var bgImage = content.Value<MediaWithCrops>("backgroundImage");
+	var items = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("items") ?? new List<BlockListItem>();
+	var dots = new[] { "pink", "yellow", "light" };
+}
+
+<section class="section bg-blue has-bg timeline" style="@(bgImage != null ? Html.Raw($"background-image:url('{bgImage.Url()}')") : Html.Raw(""))">
+	<div class="container">
+		<div class="section-head">
+			<div><span class="eyebrow tc-yellow">@(content.Value<string>("eyebrow"))</span><h2 class="display-lg tc-white">@(content.Value<string>("heading"))</h2></div>
+			<p>@(content.Value<string>("intro"))</p>
+		</div>
+		<ol class="steps">
+			@{ var i = 0; }
+			@foreach (var item in items)
+			{
+				<li class="dot-@dots[i % 3]">
+					<h3 class="year">@(item.Content.Value<string>("year"))</h3>
+					<h4>@(item.Content.Value<string>("title"))</h4>
+					<p>@(item.Content.Value<string>("text"))</p>
+				</li>
+				i++;
+			}
+		</ol>
+	</div>
+</section>

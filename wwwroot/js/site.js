@@ -60,3 +60,39 @@
 		update();
 	});
 })();
+
+// Testimonials slider
+(function () {
+	document.querySelectorAll('[data-testimonials]').forEach(function (root) {
+		var q = root.querySelectorAll('.quote'), i = 0;
+		function show(n) { i = (n + q.length) % q.length; q.forEach(function (e, k) { e.classList.toggle('active', k === i); }); }
+		var p = root.querySelector('.t-prev'), n = root.querySelector('.t-next');
+		if (p) p.addEventListener('click', function () { show(i - 1); });
+		if (n) n.addEventListener('click', function () { show(i + 1); });
+		show(0);
+	});
+})();
+
+// FAQ accordion
+(function () {
+	document.querySelectorAll('.faq-q').forEach(function (b) {
+		b.addEventListener('click', function () {
+			var item = b.parentElement, open = item.classList.toggle('open');
+			b.setAttribute('aria-expanded', open ? 'true' : 'false');
+		});
+	});
+})();
+
+// Partner directory filter
+(function () {
+	document.querySelectorAll('[data-directory]').forEach(function (root) {
+		var chips = root.querySelectorAll('.chip'), items = root.querySelectorAll('.pd-item');
+		chips.forEach(function (c) {
+			c.addEventListener('click', function () {
+				chips.forEach(function (x) { x.classList.toggle('active', x === c); });
+				var cat = c.getAttribute('data-cat');
+				items.forEach(function (it) { it.classList.toggle('hide', cat && it.getAttribute('data-cat') !== cat); });
+			});
+		});
+	});
+})();

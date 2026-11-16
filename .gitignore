@@ -483,3 +483,6 @@ umbraco-package-schema.json
 
 # Media files
 /wwwroot/media/
+
+# Contact form submissions (personal data)
+/umbraco/Data/ContactSubmissions/

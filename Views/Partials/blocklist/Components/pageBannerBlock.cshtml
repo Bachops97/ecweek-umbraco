@@ -1,14 +1,29 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
 @using Umbraco.Cms.Core.Models
 @{
-	// "Page Banner Block": dark photo header with the page title, first block on every inner page
+	// "Page Banner Block": photo header with breadcrumb, title, subtitle and an optional button
 	var content = Model.Content;
+	string P(string a, string d = "") { var o = content.Value(a); var s = o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString(); return string.IsNullOrWhiteSpace(s) ? d : s; }
 	var image = content.Value<MediaWithCrops>("image");
 	var bg = image != null ? $"background-image:url('{image.Url()}')" : "";
+	var title = content.Value<string>("title");
+	var parent = content.Value<string>("breadcrumbParent");
+	var subtitle = content.Value<string>("subtitle");
+	var btn = content.Value<string>("buttonText");
 }
 
 <section class="page-banner" style="@Html.Raw(bg)">
 	<div class="container">
-		<h1>@(content.Value<string>("title"))</h1>
+		<nav class="crumbs" aria-label="Breadcrumb">
+			<a href="/">Home</a>
+			@if (!string.IsNullOrWhiteSpace(parent)) { <span>&rsaquo;</span><span>@parent</span> }
+			<span>&rsaquo;</span><span class="current">@title</span>
+		</nav>
+		<h1>@title</h1>
+		@if (!string.IsNullOrWhiteSpace(subtitle)) { <p class="sub">@subtitle</p> }
+		@if (!string.IsNullOrWhiteSpace(btn))
+		{
+			<a href="@(string.IsNullOrWhiteSpace(content.Value<string>("buttonLink")) ? "#" : content.Value<string>("buttonLink"))" class="btn btn-@P("buttonColour", "green")">@btn</a>
+		}
 	</div>
 </section>

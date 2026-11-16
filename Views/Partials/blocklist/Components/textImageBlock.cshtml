@@ -1,37 +1,70 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
 @using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
 @{
-	// Fields of the "Text Image Block" Element Type
+	// "Text Image Block": eyebrow + heading + text + buttons beside an image (or a coloured logo panel), optional logo links.
 	var content = Model.Content;
+	string P(string a, string d = "") { var o = content.Value(a); var s = o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString(); return string.IsNullOrWhiteSpace(s) ? d : s; }
+
 	var eyebrow = content.Value<string>("eyebrow");
 	var heading = content.Value<string>("heading");
 	var text = content.Value<string>("text");
 	var image = content.Value<MediaWithCrops>("image");
-	var buttonText = content.Value<string>("buttonText");
-	var buttonLink = content.Value<string>("buttonLink");
-	var blue = content.Value<bool>("blueTheme");
-	var bgImage = content.Value<MediaWithCrops>("backgroundImage"); // optional photo behind the section (tinted by the theme colour)
+	var bgImage = content.Value<MediaWithCrops>("backgroundImage"); // optional photo behind the section (tinted blue)
+	var blueLegacy = content.Value<bool>("blueTheme");               // older blocks: blue section
 
-	// Two looks from the Figma: white section with pink eyebrow, or blue section with pink heading
-	var sectionClass = (blue ? "section resources" : "section") + (bgImage != null ? " has-bg" : "");
+	var bg = P("background", blueLegacy ? "blue" : "white");
+	var dark = bg == "blue";
+	var eyebrowColour = P("eyebrowColour", dark ? "white" : "pink");
+	var headingColour = P("headingColour", dark ? "pink" : "black");
+	var btnColour = P("buttonColour", dark ? "pink" : "yellow");
+	var panel = P("panelColour", "none");
+	var left = content.Value<bool>("imageLeft");
+	var logoLinks = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("logoLinks") ?? new List<BlockListItem>();
+
+	var sectionClass = "section bg-" + bg + (bgImage != null ? " has-bg" : "");
 	var sectionStyle = bgImage != null ? $"background-image:url('{bgImage.Url()}')" : "";
-	var buttonClass = blue ? "btn btn-pink" : "btn btn-yellow";
+	var shaped = image != null && image.Url().EndsWith(".png", StringComparison.OrdinalIgnoreCase); // PNG exports from Figma are already angled
+	var photoClass = "photo" + (shaped ? "" : " clip") + (panel != "none" ? " panel panel-" + panel : "");
 }
 
 <section class="@sectionClass" style="@Html.Raw(sectionStyle)">
-	<div class="container about">
-		<div>
-			@if (!string.IsNullOrWhiteSpace(eyebrow))
-			{
-				if (blue) { <h3>@eyebrow</h3> } else { <span class="eyebrow c-pink">@eyebrow</span> }
-			}
-			<h2 class="display-lg @(blue ? "c-pink" : "")">@heading</h2>
+	<div class="container about @(left ? "reverse" : "")">
+		<div class="copy">
+			@if (!string.IsNullOrWhiteSpace(eyebrow)) { <span class="eyebrow tc-@eyebrowColour">@eyebrow</span> }
+			<h2 class="display-lg tc-@headingColour">@heading</h2>
 			<p>@text</p>
-			@if (!string.IsNullOrWhiteSpace(buttonText))
+			@if (logoLinks.Any())
 			{
-				<a href="@(string.IsNullOrWhiteSpace(buttonLink) ? "#" : buttonLink)" class="@buttonClass">@buttonText</a>
+				<div class="logo-links">
+					@foreach (var item in logoLinks)
+					{
+						var logo = item.Content.Value<MediaWithCrops>("logo");
+						var label = item.Content.Value<string>("label");
+						var link = item.Content.Value<string>("link");
+						<div>
+							@if (logo != null) { <img src="@logo.Url()" alt="@label" /> }
+							@if (!string.IsNullOrWhiteSpace(label)) { <a href="@(string.IsNullOrWhiteSpace(link) ? "#" : link)">@label</a> }
+						</div>
+					}
+				</div>
+			}
+			@if (!string.IsNullOrWhiteSpace(content.Value<string>("buttonText")) || !string.IsNullOrWhiteSpace(content.Value<string>("button2Text")))
+			{
+				<div class="btn-row">
+					@if (!string.IsNullOrWhiteSpace(content.Value<string>("buttonText")))
+					{
+						<a href="@(string.IsNullOrWhiteSpace(content.Value<string>("buttonLink")) ? "#" : content.Value<string>("buttonLink"))" class="btn btn-@btnColour">@(content.Value<string>("buttonText"))</a>
+					}
+					@if (!string.IsNullOrWhiteSpace(content.Value<string>("button2Text")))
+					{
+						<a href="@(string.IsNullOrWhiteSpace(content.Value<string>("button2Link")) ? "#" : content.Value<string>("button2Link"))" class="btn btn-@btnColour">@(content.Value<string>("button2Text"))</a>
+					}
+				</div>
 			}
 		</div>
-		<div class="photo" style="@(image != null ? Html.Raw($"background-image:url('{image.Url()}')") : Html.Raw(""))"></div>
+		<div class="@photoClass" style="@(image != null && panel == "none" ? Html.Raw($"background-image:url('{image.Url()}')") : Html.Raw(""))">
+			@if (image != null && panel != "none") { <img src="@image.Url()" alt="" /> }
+		</div>
 	</div>
 </section>

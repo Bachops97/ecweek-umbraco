@@ -1,0 +1,31 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	string P(string a, string d = "") { var o = content.Value(a); var s = o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString(); return string.IsNullOrWhiteSpace(s) ? d : s; }
+	var cards = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("cards") ?? new List<BlockListItem>();
+}
+
+<section class="section bg-@P("background", "yellow") feature-cards">
+	<div class="container">
+		<div class="center">
+			<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
+			<p class="lead">@(content.Value<string>("intro"))</p>
+		</div>
+		<div class="fc-grid">
+			@foreach (var card in cards)
+			{
+				var bullets = (card.Content.Value<string>("bullets") ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+				<article class="fc">
+					<span class="fc-tab">@(card.Content.Value<string>("label"))</span>
+					<h3>@(card.Content.Value<string>("title"))</h3>
+					<ul>@foreach (var b in bullets) { <li>@b</li> }</ul>
+				</article>
+			}
+		</div>
+		@if (!string.IsNullOrWhiteSpace(content.Value<string>("buttonText")))
+		{
+			<div class="center"><a href="@(string.IsNullOrWhiteSpace(content.Value<string>("buttonLink")) ? "#" : content.Value<string>("buttonLink"))" class="btn btn-pink">@(content.Value<string>("buttonText"))</a></div>
+		}
+	</div>
+</section>

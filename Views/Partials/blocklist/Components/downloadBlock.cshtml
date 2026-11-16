@@ -1,0 +1,23 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	var content = Model.Content;
+	var image = content.Value<MediaWithCrops>("image");
+}
+
+<section class="section bg-yellow download">
+	<div class="container">
+		<div class="dl-panel">
+			@if (image != null) { <img class="dl-img" src="@image.Url()" alt="" /> }
+			<div class="dl-copy">
+				<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
+				<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
+				<p>@(content.Value<string>("text"))</p>
+				@if (!string.IsNullOrWhiteSpace(content.Value<string>("buttonText")))
+				{
+					<a href="@(string.IsNullOrWhiteSpace(content.Value<string>("buttonLink")) ? "#" : content.Value<string>("buttonLink"))" class="btn btn-pink btn-download">@(content.Value<string>("buttonText"))</a>
+				}
+			</div>
+		</div>
+	</div>
+</section>

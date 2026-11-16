@@ -1,0 +1,64 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@{
+	var content = Model.Content;
+	var purposes = (content.Value<string>("purposes") ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+	var sent = Context.Request.Query["sent"] == "1";
+	string[] Lines(string a) => (content.Value<string>(a) ?? "").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
+<section class="section bg-yellow contact">
+	<div class="container contact-grid">
+		<div>
+			<h2 class="display-lg tc-blue">@(content.Value<string>("formHeading"))</h2>
+			@if (sent)
+			{
+				<p class="thanks">@(content.Value<string>("thankYou"))</p>
+			}
+			else
+			{
+				<form method="post" action="/contact/submit" enctype="multipart/form-data" class="cform">
+					<input type="hidden" name="page" value="@Context.Request.Path" />
+					<input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+					<label>Name*<input name="name" placeholder="Enter name" required /></label>
+					<label>Telephone number*<input name="phone" placeholder="Enter phone number" required /></label>
+					<label>Company name (optional)<input name="company" placeholder="Enter company name" /></label>
+					<label>Position in company (optional)<input name="position" placeholder="Enter position" /></label>
+					<label>Email address*<input type="email" name="email" placeholder="Enter email" required /></label>
+					<label>Purpose*
+						<select name="purpose" required>
+							<option value="" disabled selected>Select purpose</option>
+							@foreach (var p in purposes) { <option>@p</option> }
+						</select>
+					</label>
+					<label class="full">Additional notes*<textarea name="notes" rows="4" placeholder="Enter notes" required></textarea></label>
+					<label class="full file"><span class="attach">Attach files</span><input type="file" name="files" multiple /></label>
+					<label class="full check"><input type="checkbox" name="terms" required /> I agree to the terms and conditions</label>
+					<button type="submit" class="btn btn-pink full-auto">Submit form</button>
+				</form>
+			}
+		</div>
+		<div>
+			<h2 class="display-lg tc-blue">@(content.Value<string>("detailsHeading"))</h2>
+			<div class="details">
+				<div class="d-row">
+					<h4>Contact number</h4>
+					<p>Contact: @(content.Value<string>("phone"))<br />Whatsapp: @(content.Value<string>("whatsapp"))</p>
+				</div>
+				<div class="d-row">
+					<h4>Email</h4>
+					@foreach (var g in new[] { Lines("emailBlock1"), Lines("emailBlock2") })
+					{
+						if (!g.Any()) { continue; }
+						<p class="grp"><strong>@g[0]</strong>@foreach (var line in g.Skip(1)) { <br />if (line.Contains('@')) { <a href="mailto:@line">@line</a> } else { @line } }</p>
+					}
+				</div>
+				<div class="d-social">
+					<a href="#" aria-label="Facebook"><img src="/images/icons/facebook.png" alt="" /></a>
+					<a href="#" aria-label="X"><img src="/images/icons/x.png" alt="" /></a>
+					<a href="#" aria-label="Instagram"><img src="/images/icons/instagram.png" alt="" /></a>
+					<a href="#" aria-label="LinkedIn"><img src="/images/icons/linkedin.png" alt="" /></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

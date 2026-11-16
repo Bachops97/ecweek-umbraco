@@ -1,0 +1,31 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	var image = content.Value<MediaWithCrops>("image");
+	var items = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("items") ?? new List<BlockListItem>();
+	var shaped = image != null && image.Url().EndsWith(".png", StringComparison.OrdinalIgnoreCase);
+}
+
+<section class="section bg-yellow testimonials" data-testimonials>
+	<div class="container about">
+		<div class="copy">
+			<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
+			<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
+			<div class="quote-mark" aria-hidden="true">&ldquo;</div>
+			@foreach (var item in items)
+			{
+				<blockquote class="quote">
+					<p>@(item.Content.Value<string>("quote"))</p>
+					<cite>&ndash;@(item.Content.Value<string>("author"))</cite>
+				</blockquote>
+			}
+			<div class="card-arrows pink">
+				<button type="button" class="t-prev" aria-label="Previous">&larr;</button>
+				<button type="button" class="t-next" aria-label="Next">&rarr;</button>
+			</div>
+		</div>
+		<div class="photo@(shaped ? "" : " clip")" style="@(image != null ? Html.Raw($"background-image:url('{image.Url()}')") : Html.Raw(""))"></div>
+	</div>
+</section>

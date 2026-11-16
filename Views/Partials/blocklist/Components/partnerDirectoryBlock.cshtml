@@ -1,0 +1,32 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	string Cat(IPublishedElement e) { var o = e.Value("category"); return o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString() ?? ""; }
+	var items = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("items") ?? new List<BlockListItem>();
+	var categories = items.Select(i => Cat(i.Content)).Where(c => c != "").Distinct().ToList();
+}
+
+<section class="section partner-directory" data-directory>
+	<div class="container">
+		<div class="partners-head">
+			<span class="eyebrow tc-pink-soft">@(content.Value<string>("eyebrow"))</span>
+			<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
+			<p>@(content.Value<string>("intro"))</p>
+		</div>
+		<div class="filters" role="tablist">
+			<button type="button" class="chip active" data-cat="">All</button>
+			@foreach (var c in categories) { <button type="button" class="chip" data-cat="@c">@c</button> }
+		</div>
+		<div class="pd-grid">
+			@foreach (var item in items)
+			{
+				var logo = item.Content.Value<MediaWithCrops>("logo");
+				var link = item.Content.Value<string>("link");
+				if (logo == null) { continue; }
+				<a class="pd-item" data-cat="@Cat(item.Content)" href="@(string.IsNullOrWhiteSpace(link) ? "#" : link)" title="@(item.Content.Value<string>("partnerName"))"><img src="@logo.Url()" alt="@(item.Content.Value<string>("partnerName"))" loading="lazy" /></a>
+			}
+		</div>
+	</div>
+</section>

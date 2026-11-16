@@ -1,0 +1,26 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	string P(string a, string d = "") { var o = content.Value(a); var s = o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString(); return string.IsNullOrWhiteSpace(s) ? d : s; }
+	var cols = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("columns") ?? new List<BlockListItem>();
+}
+
+<section class="section bg-@P("background", "yellow") icon-columns">
+	<div class="container">
+		<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
+		<h2 class="display-lg tc-pink">@(content.Value<string>("heading"))</h2>
+		<div class="ic-grid">
+			@foreach (var col in cols)
+			{
+				var icon = col.Content.Value<MediaWithCrops>("icon");
+				<div>
+					@if (icon != null) { <img src="@icon.Url()" alt="" class="ic-icon" /> }
+					<h3>@(col.Content.Value<string>("title"))</h3>
+					<p>@(col.Content.Value<string>("text"))</p>
+				</div>
+			}
+		</div>
+	</div>
+</section>

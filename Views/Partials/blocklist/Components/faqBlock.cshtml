@@ -1,0 +1,31 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models.Blocks
+@{
+	var content = Model.Content;
+	var items = (IEnumerable<BlockListItem>)content.Value<BlockListModel>("items") ?? new List<BlockListItem>();
+	var n = 0;
+}
+
+<section class="section bg-cream faq">
+	<div class="container">
+		<div class="center">
+			<span class="eyebrow tc-black">@(content.Value<string>("eyebrow"))</span>
+			<h2 class="display-lg tc-blue">@(content.Value<string>("heading"))</h2>
+		</div>
+		<div class="faq-list">
+			@foreach (var item in items)
+			{
+				var answer = item.Content.Value<string>("answer") ?? "";
+				<div class="faq-item@(n == 0 ? " open" : "")">
+					<button type="button" class="faq-q" aria-expanded="@(n == 0 ? "true" : "false")">@(item.Content.Value<string>("question"))</button>
+					<div class="faq-a">@foreach (var para in answer.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) { <p>@para</p> }</div>
+				</div>
+				n++;
+			}
+		</div>
+		@if (!string.IsNullOrWhiteSpace(content.Value<string>("buttonText")))
+		{
+			<div class="center"><a href="@(string.IsNullOrWhiteSpace(content.Value<string>("buttonLink")) ? "#" : content.Value<string>("buttonLink"))" class="btn btn-blue">@(content.Value<string>("buttonText"))</a></div>
+		}
+	</div>
+</section>
