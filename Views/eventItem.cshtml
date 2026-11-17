@@ -11,7 +11,8 @@
 	var start = Model.Value<DateTime>("startDate");
 	var when = start > DateTime.MinValue ? start.ToString("d MMMM yyyy", CultureInfo.InvariantCulture) + (S("timeText") != "" ? " | " + S("timeText") : "") : S("timeText");
 	var cat = Lines("tags").FirstOrDefault() ?? S("eventType");
-	string Link(string v) => string.IsNullOrWhiteSpace(v) ? "#" : v;
+	string MapUrl() => "https://www.google.com/maps/search/?api=1&query=" + Uri.EscapeDataString(S("location") != "" ? S("location") : Model.Name);
+	string Link(string v) => string.IsNullOrWhiteSpace(v) || v.Trim() == "#" ? MapUrl() : v;
 	ViewData["bg"] = "yellow"; ViewData["h1"] = "You might be"; ViewData["h2"] = "interested in"; ViewData["horizontal"] = false;
 }
 
@@ -35,7 +36,7 @@
 						<div class="map-info">
 							<h3>@S("directionsHeading")</h3>
 							<p>@S("directionsText")</p>
-							<a class="btn btn-green" href="@Link(S("directionsLink"))">Get directions</a>
+							<a class="btn btn-green" href="@Link(S("directionsLink"))" target="_blank" rel="noopener">Get directions</a>
 						</div>
 					</div>
 				}
@@ -43,7 +44,7 @@
 			<aside class="detail-side">
 				<div class="info-panel">
 					@if (when != "") { <div class="info-row"><span class="ic">@await Html.PartialAsync("Icon", "calendar")</span><div><h4>Date &amp; time</h4><p>@when</p></div></div> }
-					@if (S("location") != "") { <div class="info-row"><span class="ic">@await Html.PartialAsync("Icon", "pin")</span><div><h4>Location</h4><p>@S("location")</p>@if (S("mapLink") != "") { <a class="link" href="@S("mapLink")">View on Map &rarr;</a> }</div></div> }
+					@if (S("location") != "") { <div class="info-row"><span class="ic">@await Html.PartialAsync("Icon", "pin")</span><div><h4>Location</h4><p>@S("location")</p><a class="link" href="@Link(S("mapLink"))" target="_blank" rel="noopener">View on Map &rarr;</a></div></div> }
 					@if (S("ageRange") != "") { <div class="info-row"><span class="ic">@await Html.PartialAsync("Icon", "people")</span><div><h4>Age range</h4><p>@S("ageRange")</p></div></div> }
 					@if (S("accessibility") != "") { <div class="info-row"><span class="ic">@await Html.PartialAsync("Icon", "access")</span><div><h4>Accessibility</h4><p>@S("accessibility")</p></div></div> }
 					@if (S("targetAudience") != "") { <div class="info-row"><span class="ic">@await Html.PartialAsync("Icon", "target")</span><div><h4>Target audience</h4><p>@S("targetAudience")</p></div></div> }
