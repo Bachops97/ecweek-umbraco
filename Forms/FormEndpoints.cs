@@ -12,6 +12,7 @@ using Umbraco.Cms.Core.Models.Email;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 
 namespace MyProject.Forms;
@@ -97,8 +98,14 @@ public static class FormEndpoints
         await File.WriteAllTextAsync(Path.Combine(dir, id + ".json"),
             JsonSerializer.Serialize(new { received = DateTime.UtcNow, form = key, values, files = saved }, new JsonSerializerOptions { WriteIndented = true }));
 
-        // 2. E-mail (visitor + team)
         var log = http.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("Forms");
+
+        // 1b. Also store as a node under Content -> Form Submissions so the team can read it in the backoffice
+        try { SaveToBackoffice(http.RequestServices, key, values); }
+        catch (Exception ex) { log.LogError(ex, "Form {Form}: could not save submission {Id} to the backoffice", key, id); }
+
+        // 2. E-mail (visitor + team) - switched off unless Forms:SendEmails is true
+        if (!http.RequestServices.GetRequiredService<IConfiguration>().GetValue<bool>("Forms:SendEmails")) return Ok();
         try
         {
             var templates = LoadTemplates(http.RequestServices);
@@ -107,6 +114,25 @@ public static class FormEndpoints
         }
         catch (Exception ex) { log.LogError(ex, "Form {Form}: submission {Id} was stored but the e-mails failed", key, id); }
         return Ok();
+    }
+
+    static void SaveToBackoffice(IServiceProvider sp, string key, Dictionary<string, string> values)
+    {
+        var cs = sp.GetRequiredService<IContentService>();
+        var root = cs.GetRootContent().FirstOrDefault(c => c.ContentType.Alias == "formSubmissions");
+        if (root == null) return;
+        string V(string k) => values.TryGetValue(k, out var v) ? v : "";
+        var skip = new[] { "name", "email", "phone", "siteUrl" };
+        var details = string.Join("\n", values.Where(kv => !skip.Contains(kv.Key, StringComparer.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(kv.Value)).Select(kv => kv.Key + ": " + kv.Value));
+        var who = V("name"); if (who == "") who = V("email");
+        var node = cs.Create($"{key} - {who} - {DateTime.Now:yyyy-MM-dd HH:mm}", root, "formSubmission");
+        node.SetValue("formType", key);
+        node.SetValue("visitorName", V("name"));
+        node.SetValue("visitorEmail", V("email"));
+        node.SetValue("visitorPhone", V("phone"));
+        node.SetValue("submittedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+        node.SetValue("details", details);
+        cs.Save(node);
     }
 
     static Dictionary<string, (string Subject, string To, string Body)> LoadTemplates(IServiceProvider sp)
