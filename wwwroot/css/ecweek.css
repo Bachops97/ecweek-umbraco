@@ -572,3 +572,6 @@ body:has(.umb-block-list > .section:first-child) .menu-bar, body:has(.detail) .m
 .site-footer, .site-footer * { clip-path: none; }
 .site-footer { clip-path: none !important; }
 @media (max-width: 900px) { .site-footer { clip-path: none !important; } }
+/* Exported banner photos already carry the dark tint from the design, so only a very light overlay on top */
+.page-banner::before { background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.22)); }
+.partner-directory .pd-item img { max-height: 90px; }
