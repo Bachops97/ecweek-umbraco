@@ -1,0 +1,48 @@
+@model MyProject.Forms.FormDialogModel
+@using Microsoft.AspNetCore.DataProtection
+@inject Microsoft.AspNetCore.DataProtection.IDataProtectionProvider DataProtection
+@{
+	// A popup (opens from any link to #popup-<id>) containing one of the site forms. The form posts to /forms/<key> with fetch.
+	var token = Model.Context is { Count: > 0 }
+		? DataProtection.CreateProtector(MyProject.Forms.FormEndpoints.ContextPurpose).Protect(System.Text.Json.JsonSerializer.Serialize(Model.Context))
+		: "";
+	var key = Model.Key.ToLowerInvariant();
+}
+
+<div class="popup" id="popup-@Model.Id" data-popup="" data-auto="false" hidden>
+	<div class="popup-backdrop" data-popup-close></div>
+	<div class="popup-dialog form-dialog" role="dialog" aria-modal="true" aria-labelledby="popup-@Model.Id-title">
+		<button type="button" class="popup-close" data-popup-close aria-label="Close"></button>
+		<h2 id="popup-@Model.Id-title">@Model.Heading</h2>
+		<form method="post" action="/forms/@key" class="cform dialog-form" data-ajax-form data-thanks="@Model.Thanks">
+			@if (!string.IsNullOrWhiteSpace(Model.Intro)) { <p class="popup-lead full">@Model.Intro</p> }
+			<input type="hidden" name="page" value="@Context.Request.Path" />
+			<input type="hidden" name="ctx" value="@token" />
+			<input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+			@switch (key)
+			{
+				case "register":
+					<label class="full">Name*<input name="name" placeholder="Enter name" required maxlength="120" /></label>
+					<label>Email address*<input type="email" name="email" placeholder="Enter email" required maxlength="200" /></label>
+					<label>Telephone number*<input name="phone" placeholder="Enter phone number" required maxlength="40" /></label>
+					<label class="full">Number of children*<input type="number" name="children" min="1" max="20" value="1" required /></label>
+					break;
+				case "pledge":
+					<label>Your name*<input name="name" placeholder="Enter your name" required maxlength="120" /></label>
+					<label>Email address*<input type="email" name="email" placeholder="Enter email" required maxlength="200" /></label>
+					<label class="full">Your child's name*<input name="childName" placeholder="Enter your child's name" required maxlength="120" /></label>
+					break;
+				case "newsletter":
+					<label>Name<input name="name" placeholder="Enter name" maxlength="120" /></label>
+					<label>Email address*<input type="email" name="email" placeholder="Enter email" required maxlength="200" /></label>
+					break;
+				default: // download
+					<label>Name*<input name="name" placeholder="Enter name" required maxlength="120" /></label>
+					<label>Email address*<input type="email" name="email" placeholder="Enter email" required maxlength="200" /></label>
+					break;
+			}
+			<p class="form-error full" role="alert" hidden></p>
+			<button type="submit" class="btn btn-blue">@Model.ButtonText</button>
+		</form>
+	</div>
+</div>

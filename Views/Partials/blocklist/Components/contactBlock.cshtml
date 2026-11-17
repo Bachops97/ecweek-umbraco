@@ -16,7 +16,7 @@
 			}
 			else
 			{
-				<form method="post" action="/contact/submit" enctype="multipart/form-data" class="cform">
+				<form method="post" action="/forms/contact" enctype="multipart/form-data" class="cform" data-ajax-form data-thanks="@(content.Value<string>("thankYou"))">
 					<input type="hidden" name="page" value="@Context.Request.Path" />
 					<input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 					<label>Name*<input name="name" placeholder="Enter name" required /></label>
@@ -33,6 +33,7 @@
 					<label class="full">Additional notes*<textarea name="notes" rows="4" placeholder="Enter notes" required></textarea></label>
 					<label class="full file"><span class="attach">Attach files</span><input type="file" name="files" multiple /></label>
 					<label class="full check"><input type="checkbox" name="terms" required /> I agree to the terms and conditions</label>
+					<p class="form-error full" role="alert" hidden></p>
 					<button type="submit" class="btn btn-pink full-auto">Submit form</button>
 				</form>
 			}

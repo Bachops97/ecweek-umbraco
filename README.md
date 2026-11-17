@@ -43,10 +43,29 @@ You need the **.NET 10 SDK**.
 Hero (carousel slides), Text + Image, Card Section (events / news), Partners, Page Banner, Timeline,
 Testimonials, Feature Cards, Icon Columns, Download, Partner Directory, Contact, FAQ.
 
-## Contact form
+## Forms and e-mail
 
-Submissions are saved as JSON (plus attachments) in `umbraco/Data/ContactSubmissions/`. No e-mail is sent yet –
-add SMTP settings and replace the "store" step in `Program.cs` with a mail send when a mail server is available.
+All public forms go through one handler, `Forms/FormEndpoints.cs` (`POST /forms/{key}`):
+`contact`, `register` (event), `download` (toolkit, Parent Pack, report), `pledge`, `newsletter`.
+
+For every submission it checks required fields and the e-mail address, ignores bots (hidden field), limits repeated
+requests (per IP and per e-mail address), stores the submission as JSON in `umbraco/Data/Submissions/<form>/`
+(git-ignored, contains personal data) and sends e-mails.
+
+**E-mail texts are editable in the backoffice**: Content -> *Email Templates* (a root node, never a public page).
+Each template has a key, subject, "send to" (`{{email}}` = the visitor, or a team address) and a message with `{{placeholders}}`
+(the list is shown in the template). Team templates go to `team@example.test` -> change them to the real address.
+
+Popup forms are blocks: add a **Form Popup Block** (download / pledge / newsletter) to a page and point any button at `#popup-<popupId>`.
+Event registration is built into the event page. Download and event details are signed on the server so visitors cannot change them.
+
+**Sending e-mail.** In development `appsettings.Local.json` uses Umbraco's pickup-folder mode, so e-mails are written as
+`.eml` files to `umbraco/Data/Outbox/` (open them with any mail app). To send for real, replace that block with network settings:
+
+```json
+"Umbraco": { "CMS": { "Global": { "Smtp": { "From": "no-reply@your-domain", "Host": "smtp.your-provider.com", "Port": 587,
+  "SecureSocketOptions": "StartTls", "Username": "...", "Password": "..." } } } }
+```
 
 ## Notes
 

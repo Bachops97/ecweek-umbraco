@@ -1,0 +1,19 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>
+@using Umbraco.Cms.Core.Models
+@{
+	// "Form Popup Block": a popup with a download / pledge / newsletter form, opened from any link to #popup-<popupId>
+	var c = Model.Content;
+	string P(string a, string d = "") { var o = c.Value(a); var s = o is string x ? x : (o as System.Collections.IEnumerable)?.Cast<object>().FirstOrDefault()?.ToString(); return string.IsNullOrWhiteSpace(s) ? d : s; }
+	var type = P("formType", "download");
+	var id = (c.Value<string>("popupId") ?? type).Trim().ToLowerInvariant().Replace(' ', '-');
+	var ctx = new Dictionary<string, string>();
+	var file = c.Value<IEnumerable<MediaWithCrops>>("resourceFile")?.FirstOrDefault();
+	if (type == "download")
+	{
+		ctx["resourceName"] = c.Value<string>("resourceName") ?? c.Value<string>("heading") ?? "download";
+		ctx["downloadLink"] = file != null ? Context.Request.Scheme + "://" + Context.Request.Host + file.Url() : Context.Request.Scheme + "://" + Context.Request.Host + "/";
+	}
+	var button = P("buttonText", type == "newsletter" ? "Subscribe" : type == "pledge" ? "Make the pledge" : "Email me the download");
+	var thanks = P("thankYou", type == "download" ? "Thank you! We have emailed you the download link." : type == "pledge" ? "Thank you for making the pledge! Please check your inbox." : "Thank you for subscribing!");
+}
+@await Html.PartialAsync("FormDialog", new MyProject.Forms.FormDialogModel(id, type, c.Value<string>("heading") ?? "", c.Value<string>("intro") ?? "", button, thanks, ctx))

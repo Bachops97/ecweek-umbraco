@@ -575,3 +575,13 @@ body:has(.umb-block-list > .section:first-child) .menu-bar, body:has(.detail) .m
 /* Exported banner photos already carry the dark tint from the design, so only a very light overlay on top */
 .page-banner::before { background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.22)); }
 .partner-directory .pd-item img { max-height: 90px; }
+
+/* Popup forms */
+.form-dialog { width: min(620px, 100%); } .form-dialog h2 { font-size: clamp(28px, 4vw, 42px); }
+.dialog-form { margin-top: 0; } .dialog-form .popup-lead { margin: 0 0 4px; text-transform: none; font-size: 15px; }
+.form-dialog .cform label { font-size: 12px; } .dialog-form .btn { grid-column: 1; width: max-content; }
+.form-error { color: #b3261e; font-size: 13px; margin: 0; text-transform: none; } .form-error[hidden] { display: none; }
+.btn.is-busy { opacity: .6; pointer-events: none; }
+.thanks { font-size: 18px; line-height: 1.5; padding: 24px; background: #eaf6ee; border-left: 5px solid var(--green); text-transform: none; }
+.popup-dialog .thanks { margin: 10px 0 0; }
+.cform .hp { position: absolute; left: -9999px; }

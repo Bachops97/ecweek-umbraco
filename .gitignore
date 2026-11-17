@@ -486,3 +486,5 @@ umbraco-package-schema.json
 
 # Contact form submissions (personal data)
 /umbraco/Data/ContactSubmissions/
+/umbraco/Data/Submissions/
+/umbraco/Data/Outbox/

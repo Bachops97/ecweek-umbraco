@@ -266,3 +266,30 @@
 		});
 	});
 })();
+
+// Forms: send with fetch, show the thank-you message (or the error) without leaving the page
+(function () {
+	document.addEventListener('submit', function (e) {
+		var f = e.target.closest && e.target.closest('form[data-ajax-form]');
+		if (!f) return;
+		e.preventDefault();
+		var btn = f.querySelector('button[type=submit]'), err = f.querySelector('.form-error');
+		if (err) err.hidden = true;
+		if (btn) { btn.disabled = true; btn.classList.add('is-busy'); }
+		fetch(f.action, { method: 'POST', body: new FormData(f), headers: { Accept: 'application/json' } })
+			.then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+			.then(function (j) {
+				if (j.ok) {
+					var p = document.createElement('p'); p.className = 'thanks'; p.setAttribute('role', 'status'); p.textContent = f.getAttribute('data-thanks') || 'Thank you!';
+					f.replaceWith(p);
+				} else {
+					if (err) { err.textContent = j.message || 'Something went wrong. Please try again.'; err.hidden = false; }
+					if (btn) { btn.disabled = false; btn.classList.remove('is-busy'); }
+				}
+			})
+			.catch(function () {
+				if (err) { err.textContent = 'We could not send your request. Please check your connection and try again.'; err.hidden = false; }
+				if (btn) { btn.disabled = false; btn.classList.remove('is-busy'); }
+			});
+	});
+})();
