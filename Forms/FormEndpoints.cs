@@ -53,7 +53,7 @@ public static class FormEndpoints
         var form = await http.Request.ReadFormAsync();
 
         // Spam traps: hidden field bots fill in, and too-fast / too-frequent submissions
-        if (!string.IsNullOrEmpty(form["website"])) return Ok();
+        if (!string.IsNullOrEmpty(form["hp_trap_9x"])) { http.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("Forms").LogWarning("Form {Form}: spam trap field was filled, submission ignored", key); return Ok(); }
         var ip = http.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         if (TooMany("ip:" + ip, 12, TimeSpan.FromMinutes(10))) return Fail("Too many requests. Please try again in a few minutes.", 429);
 
